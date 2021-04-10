@@ -7,6 +7,7 @@ import pl.mikigal.memes.data.meme.Meme;
 import pl.mikigal.memes.data.user.User;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -28,6 +29,8 @@ public class Comment {
     private String content;
     private int votes;
 
+    private Date uploadDate;
+
     @OneToMany
     private List<User> votedUsers;
 
@@ -35,5 +38,6 @@ public class Comment {
         this.author = author;
         this.meme = meme;
         this.content = content;
+        this.uploadDate = new Date();
     }
 }

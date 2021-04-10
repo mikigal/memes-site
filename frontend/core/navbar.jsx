@@ -25,7 +25,8 @@ export const Navbar = () => {
                     <UI.Image src={logo} />
                 </a>
             </Link>
-            <UI.HStack>
+
+            <UI.HStack spacing="0">
                 <NavbarEntry target="/" name="Home" />
                 <NavbarSeparator />
                 <NavbarEntry target="/newest" name="Newest" />
@@ -58,7 +59,7 @@ const NavbarEntry = (props) => {
 
     return (
         <UI.Text
-            fontSize="20px"
+            fontSize="xl"
             transition="color 0.15s ease"
             color={router.asPath == target ? Config.Accent : Config.Text}
             _hover={{ color: Config.Accent }}
@@ -70,7 +71,7 @@ const NavbarEntry = (props) => {
 
 const NavbarSeparator = () => {
     return (
-        <UI.Text fontWeight="light" paddingLeft="10px" paddingRight="10px">
+        <UI.Text fontWeight="light" paddingLeft="15px" paddingRight="15px">
             |
         </UI.Text>
     );

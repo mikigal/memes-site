@@ -43,25 +43,11 @@ const App = ({ Component, pageProps }) => {
                 width="100vw"
                 height="100%"
                 justifyContent="center"
-                top="75px"
+                paddingTop="75px"
                 paddingLeft="20px"
                 paddingRight="20px"
-                position="fixed"
             >
-                <UI.Box
-                    width="100%"
-                    height="100%"
-                    maxWidth="700px"
-                    overflowY="scroll"
-                    css={{
-                        "&::-webkit-scrollbar": {
-                            width: "0px",
-                        },
-                        "&::-webkit-scrollbar-track": {
-                            width: "0px",
-                        },
-                    }}
-                >
+                <UI.Box width="100%" height="100%" maxWidth="700px">
                     <Component {...pageProps} />
                 </UI.Box>
 

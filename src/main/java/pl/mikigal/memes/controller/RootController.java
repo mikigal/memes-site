@@ -30,10 +30,11 @@ public class RootController {
     @GetMapping("/memes")
     public Object memes(@RequestParam int page) {
         if (page < 0) {
-            return ResponseEntity.badRequest();
+            return ResponseEntity.badRequest().body(null);
         }
 
-        return memeRepository.findWithOffset(10, page * 10).stream()
+        return memeRepository.findWithOffset(10, page * 10)
+                .stream()
                 .map(MemeDto::new)
                 .collect(Collectors.toList());
     }
@@ -46,6 +47,14 @@ public class RootController {
         }
 
         return new MemeDto(meme.get());
+    }
+
+    @GetMapping("/most_popular")
+    public Object mostPopular() {
+        return memeRepository.findMostPopular(10)
+                .stream()
+                .map(MemeDto::new)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/temp")

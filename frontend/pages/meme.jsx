@@ -3,6 +3,7 @@ import * as Config from "../core/config.json";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import { Meme } from "../core/meme";
+import { CommentsSection } from "../core/comments_section";
 
 import useSWR from "swr";
 
@@ -49,16 +50,18 @@ export default function MemeView() {
     }
 
     return (
-        <Meme
-            id={data.id}
-            title={data.title}
-            author={data.author}
-            uploadDate={data.uploadDate}
-            votes={data.votes}
-            commentsAmount={data.comments.length}
-            image={data.image}
-        />
-    );
+        <>
+            <Meme
+                id={data.id}
+                title={data.title}
+                author={data.author}
+                uploadDate={data.uploadDate}
+                votes={data.votes}
+                commentsAmount={data.comments.length}
+                image={data.image}
+            />
 
-    return <>a</>;
+            <CommentsSection comments={data.comments} />
+        </>
+    );
 }
