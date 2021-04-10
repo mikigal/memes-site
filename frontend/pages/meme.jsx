@@ -1,17 +1,19 @@
 import * as UI from "@chakra-ui/react";
 import * as Config from "../core/config.json";
-import { Meme } from "../core/meme";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
+import { Meme } from "../core/meme";
+
 import useSWR from "swr";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
-export default function Index() {
+export default function MemeView() {
     const router = useRouter();
-    const page = router.query.page == undefined ? 0 : router.query.page;
+    const memeId = router.query.id === undefined ? -1 : router.query.id;
 
     const { data, error } = useSWR(
-        Config.restAddress + "/memes?page=" + page,
+        Config.restAddress + "/meme/" + memeId,
         fetcher
     );
 
@@ -32,7 +34,7 @@ export default function Index() {
                     Something went wrong!
                 </UI.AlertTitle>
                 <UI.AlertDescription maxWidth="sm">
-                    An error occurred while loading memes
+                    An error occurred while loading meme
                 </UI.AlertDescription>
             </UI.Alert>
         );
@@ -47,19 +49,16 @@ export default function Index() {
     }
 
     return (
-        <>
-            {data.map((meme) => (
-                <Meme
-                    key={meme.id}
-                    id={meme.id}
-                    title={meme.title}
-                    author={meme.author}
-                    uploadDate={meme.uploadDate}
-                    votes={meme.votes}
-                    commentsAmount={meme.comments.length}
-                    image={meme.image}
-                />
-            ))}
-        </>
+        <Meme
+            id={data.id}
+            title={data.title}
+            author={data.author}
+            uploadDate={data.uploadDate}
+            votes={data.votes}
+            commentsAmount={data.comments.length}
+            image={data.image}
+        />
     );
+
+    return <>a</>;
 }

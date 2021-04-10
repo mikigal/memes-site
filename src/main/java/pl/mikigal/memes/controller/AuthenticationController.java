@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import pl.mikigal.memes.data.dto.RegisterFormDto;
-import pl.mikigal.memes.data.User;
-import pl.mikigal.memes.data.UserRepository;
+import pl.mikigal.memes.data.user.User;
+import pl.mikigal.memes.data.user.UserRepository;
 import pl.mikigal.memes.exception.UserRegisterException;
 
 import javax.validation.Valid;

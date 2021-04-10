@@ -1,4 +1,4 @@
-package pl.mikigal.memes.data;
+package pl.mikigal.memes.data.user;
 
 import org.springframework.data.repository.CrudRepository;
 

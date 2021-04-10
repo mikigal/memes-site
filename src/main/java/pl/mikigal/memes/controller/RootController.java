@@ -2,14 +2,16 @@ package pl.mikigal.memes.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import pl.mikigal.memes.data.*;
+import org.springframework.web.bind.annotation.*;
+import pl.mikigal.memes.data.comment.Comment;
+import pl.mikigal.memes.data.comment.CommentRepository;
 import pl.mikigal.memes.data.dto.MemeDto;
+import pl.mikigal.memes.data.meme.Meme;
+import pl.mikigal.memes.data.meme.MemeRepository;
+import pl.mikigal.memes.data.user.User;
+import pl.mikigal.memes.data.user.UserRepository;
 
-import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -27,9 +29,23 @@ public class RootController {
 
     @GetMapping("/memes")
     public Object memes(@RequestParam int page) {
+        if (page < 0) {
+            return ResponseEntity.badRequest();
+        }
+
         return memeRepository.findWithOffset(10, page * 10).stream()
                 .map(MemeDto::new)
                 .collect(Collectors.toList());
+    }
+
+    @GetMapping("/meme/{id}")
+    public Object meme(@PathVariable int id) {
+        Optional<Meme> meme = this.memeRepository.findById(id);
+        if (!meme.isPresent()) {
+            return ResponseEntity.status(404).body(null);
+        }
+
+        return new MemeDto(meme.get());
     }
 
     @GetMapping("/temp")

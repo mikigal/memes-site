@@ -4,9 +4,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import pl.mikigal.memes.data.User;
+import pl.mikigal.memes.data.user.User;
 import pl.mikigal.memes.authorization.UserDetailsImpl;
-import pl.mikigal.memes.data.UserRepository;
+import pl.mikigal.memes.data.user.UserRepository;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {

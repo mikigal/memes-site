@@ -1,14 +1,15 @@
-package pl.mikigal.memes.data;
+package pl.mikigal.memes.data.meme;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import pl.mikigal.memes.data.comment.Comment;
+import pl.mikigal.memes.data.user.User;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 @Getter
 @NoArgsConstructor

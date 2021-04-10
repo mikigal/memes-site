@@ -1,8 +1,9 @@
-package pl.mikigal.memes.data;
+package pl.mikigal.memes.data.user;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import pl.mikigal.memes.data.meme.Meme;
 
 import javax.persistence.*;
 import java.util.ArrayList;

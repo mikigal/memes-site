@@ -3,7 +3,7 @@ package pl.mikigal.memes.authorization;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import pl.mikigal.memes.data.User;
+import pl.mikigal.memes.data.user.User;
 
 import java.util.Collection;
 import java.util.Collections;

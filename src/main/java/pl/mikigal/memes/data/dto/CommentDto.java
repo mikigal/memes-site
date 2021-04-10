@@ -1,7 +1,7 @@
 package pl.mikigal.memes.data.dto;
 
 import lombok.Getter;
-import pl.mikigal.memes.data.Comment;
+import pl.mikigal.memes.data.comment.Comment;
 
 @Getter
 public class CommentDto {

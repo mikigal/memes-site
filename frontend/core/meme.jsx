@@ -44,11 +44,11 @@ export const Meme = (props) => {
                             </a>
                         </Link>
                         <UI.Text fontSize="30px" fontWeight="bold">
-                            <Link href={"/post/" + id}>{title}</Link>
+                            <Link href={"/meme?id=" + id}>{title}</Link>
                         </UI.Text>
                     </UI.HStack>
 
-                    <Link href={"/post/" + id}>
+                    <Link href={"/meme?id=" + id}>
                         <a>
                             <UI.HStack>
                                 <ChatIcon fontSize="19px" fontWeight="bold" />
@@ -61,7 +61,7 @@ export const Meme = (props) => {
                 </UI.HStack>
             </UI.Box>
 
-            <Link href={"/post/" + id}>
+            <Link href={"/meme?id=" + id}>
                 <UI.Image
                     src={Config.restAddress + "/uploads/memes/" + image}
                     width="100%"

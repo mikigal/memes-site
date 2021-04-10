@@ -1,7 +1,7 @@
 package pl.mikigal.memes.data.dto;
 
 import lombok.Getter;
-import pl.mikigal.memes.data.Meme;
+import pl.mikigal.memes.data.meme.Meme;
 
 import java.util.List;
 import java.util.stream.Collectors;

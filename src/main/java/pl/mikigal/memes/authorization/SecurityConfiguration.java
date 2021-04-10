@@ -46,6 +46,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/").permitAll()
                 .antMatchers("/register").permitAll()
                 .antMatchers("/memes").permitAll()
+                .antMatchers("/meme/**").permitAll()
                 .antMatchers("/temp").permitAll()
                 .antMatchers("/uploads/**").permitAll()
                 .anyRequest().authenticated()
@@ -54,7 +55,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .exceptionHandling()
                 .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                 .and()
-                .cors().configurationSource(corsConfigurationSource())
+                .cors()
                 .and()
                 .csrf().disable();
     }
@@ -62,7 +63,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        System.out.println(this.corsAllowed);
         configuration.setAllowedOrigins(Collections.singletonList(this.corsAllowed));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST"));
 
