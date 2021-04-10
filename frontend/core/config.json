@@ -1,0 +1,8 @@
+{
+    "restAddress": "http://localhost:8080",
+
+    "BackgroundDarker": "#101114",
+    "Background": "#17181c",
+    "Accent": "#b520f5",
+    "Text": "#cbd9f0"
+}
