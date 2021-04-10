@@ -8,7 +8,7 @@ import Link from "next/link";
 export const Navbar = () => {
     const logo = UI.useBreakpointValue({
         base: "/logo-min.png",
-        lg: "/logo.png",
+        md: "/logo.png",
     });
 
     return (

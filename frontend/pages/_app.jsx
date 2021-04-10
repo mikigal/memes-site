@@ -2,6 +2,7 @@ import * as UI from "@chakra-ui/react";
 import * as Config from "../core/config.json";
 import { Navbar } from "../core/navbar";
 import { Profile } from "../core/sidebar";
+import { createBreakpoints } from "@chakra-ui/theme-tools";
 
 import Router from "next/router";
 import NProgress from "nprogress";
@@ -22,62 +23,45 @@ const theme = UI.extendTheme({
                 padding: 0,
                 bg: Config.Background,
                 color: Config.Text,
-                overflowX: "hidden",
             },
             "#nprogress .bar": {
                 bg: Config.Accent,
             },
         }),
     },
+    breakpoints: createBreakpoints({
+        sm: "30em",
+        md: "48em",
+        lg: "62em",
+        xl: "80em",
+        "2xl": "128em",
+    }),
 });
 
 const App = ({ Component, pageProps }) => {
-    //TODO: Stick sidebar to right side, may need to modify breakpoints
     return (
         <UI.ChakraProvider theme={theme}>
-            <UI.ColorModeScript
-                initialColorMode={theme.config.initialColorMode}
-            />
             <Navbar />
-            <UI.Flex
-                width="100vw"
-                height="100%"
-                justifyContent="center"
-                paddingTop="75px"
-                paddingLeft="20px"
-                paddingRight="20px"
+            <UI.Box
+                marginLeft={{ base: "0", xl: "19%", "2xl": "27%" }}
+                marginRight={{ base: "0", xl: "19%", "2xl": "27%" }}
             >
-                <UI.Box width="100%" height="100%" maxWidth="700px">
-                    <Component {...pageProps} />
-                </UI.Box>
-
-                <UI.VStack
-                    display={{
-                        base: "none",
-                        xl: "block",
-                    }}
-                >
-                    <Profile />
-                </UI.VStack>
-            </UI.Flex>
+                <UI.Flex height="100%" width="100%" paddingTop="75px">
+                    <UI.Box width={{ base: "100%", md: "60%" }}>
+                        <Component {...pageProps} />
+                    </UI.Box>
+                    <UI.VStack
+                        position="fixed"
+                        display={{ base: "none", md: "block" }}
+                        width={{ base: "40%", "2xl": "24%" }}
+                        right={{ base: "0", "2xl": "20%" }}
+                    >
+                        <Profile />
+                    </UI.VStack>
+                </UI.Flex>
+            </UI.Box>
         </UI.ChakraProvider>
     );
 };
 
 export default App;
-
-/*
-<UI.Text
-                fontSize="20px"
-                color={{
-                    base: "red",
-                    sm: "green",
-                    md: "blue",
-                    lg: "white",
-                    xl: "grey",
-                    "2xl": Config.Accent,
-                }}
-            >
-                xddddd
-            </UI.Text>
-*/
