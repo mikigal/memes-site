@@ -6,5 +6,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class VoteResponseDto {
-    private final int votes;
+    private final int newVotes;
+    private final int newState;
 }

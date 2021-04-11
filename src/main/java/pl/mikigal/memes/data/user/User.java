@@ -53,7 +53,7 @@ public class User {
         this.memes = new HashSet<>();
     }
 
-    public void vote(Meme meme, boolean plus) {
+    public int vote(Meme meme, boolean plus) {
         if (plus) {
             if (this.votedMinusMemes.contains(meme)) {
                 this.votedMinusMemes.remove(meme);
@@ -63,19 +63,23 @@ public class User {
                 meme.getVotedPlusUsers().add(this);
 
                 meme.setVotes(meme.getVotes() + 2);
+
+                return 1;
             }
             else if (this.votedPlusMemes.contains(meme)) {
                 this.votedPlusMemes.remove(meme);
                 meme.getVotedPlusUsers().remove(this);
                 meme.setVotes(meme.getVotes() - 1);
+
+                return -1;
             }
             else {
                 this.votedPlusMemes.add(meme);
                 meme.getVotedPlusUsers().add(this);
                 meme.setVotes(meme.getVotes() + 1);
-            }
 
-            return;
+                return 1;
+            }
         }
 
         // Minus
@@ -87,22 +91,25 @@ public class User {
             meme.getVotedMinusUsers().add(this);
 
             meme.setVotes(meme.getVotes() - 2);
+            return 0;
         }
         else if (this.votedMinusMemes.contains(meme)) {
             this.votedMinusMemes.remove(meme);
             meme.getVotedMinusUsers().remove(this);
 
             meme.setVotes(meme.getVotes() + 1);
+            return -1;
         }
         else {
             this.votedMinusMemes.add(meme);
             meme.getVotedMinusUsers().add(this);
 
             meme.setVotes(meme.getVotes() - 1);
+            return 0;
         }
     }
 
-    public void vote(Comment comment, boolean plus) {
+    public int vote(Comment comment, boolean plus) {
         if (plus) {
             if (this.votedMinusComments.contains(comment)) {
                 this.votedMinusComments.remove(comment);
@@ -112,19 +119,20 @@ public class User {
                 comment.getVotedPlusUsers().add(this);
 
                 comment.setVotes(comment.getVotes() + 2);
+                return 1;
             }
             else if (this.votedPlusComments.contains(comment)) {
                 this.votedPlusComments.remove(comment);
                 comment.getVotedPlusUsers().remove(this);
                 comment.setVotes(comment.getVotes() - 1);
+                return -1;
             }
             else {
                 this.votedPlusComments.add(comment);
                 comment.getVotedPlusUsers().add(this);
                 comment.setVotes(comment.getVotes() + 1);
+                return 1;
             }
-
-            return;
         }
 
         // Minus
@@ -136,18 +144,21 @@ public class User {
             comment.getVotedMinusUsers().add(this);
 
             comment.setVotes(comment.getVotes() - 2);
+            return 0;
         }
         else if (this.votedMinusComments.contains(comment)) {
             this.votedMinusComments.remove(comment);
             comment.getVotedMinusUsers().remove(this);
 
             comment.setVotes(comment.getVotes() + 1);
+            return -1;
         }
         else {
             this.votedMinusComments.add(comment);
             comment.getVotedMinusUsers().add(this);
 
             comment.setVotes(comment.getVotes() - 1);
+            return 0;
         }
     }
 }

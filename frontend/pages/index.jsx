@@ -1,8 +1,11 @@
 import * as UI from "@chakra-ui/react";
+
+import * as API from "../core/utils/api";
 import * as Config from "../core/config.json";
-import { Meme } from "../core/meme_preview";
+import { fetcher, ErrorAlert } from "../core/utils/utils";
+import { Meme } from "../core/components/meme_preview";
+
 import { useRouter } from "next/router";
-import { fetcher, ErrorAlert } from "../core/utils";
 import useSWR from "swr";
 
 export default function Index() {
@@ -14,7 +17,13 @@ export default function Index() {
         fetcher
     );
 
-    if (error || (data && data.error)) {
+    const { loading, user } = API.getUser();
+
+    if (loading) {
+        return <UI.Text>Loading...</UI.Text>;
+    }
+
+    if (error) {
         return (
             <ErrorAlert
                 title="Something went wrong!"
@@ -43,6 +52,7 @@ export default function Index() {
                     votes={meme.votes}
                     comments={meme.comments}
                     image={meme.image}
+                    user={user}
                 />
             ))}
         </>

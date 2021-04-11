@@ -1,4 +1,6 @@
-import * as Config from "./config.json";
+import * as Config from "../config.json";
+
+import useSWR from "swr";
 
 export const vote = async (id, meme, plus, toast) => {
     const { data, error } = await sendAuthorizedRequest("/vote", "POST", {
@@ -20,19 +22,34 @@ export const vote = async (id, meme, plus, toast) => {
         return undefined;
     }
 
-    return data.votes;
+    return { newVotes: data.newVotes, newState: data.newState };
 };
 
+export const getUser = () => {
+    const { data, error } = useSWR(
+        Config.restAddress + "/user",
+        authorizedFetcher
+    );
+
+    const loading = !data && !error;
+
+    return {
+        loading,
+        user: data,
+    };
+};
+
+let unauthorized = false;
 export const sendAuthorizedRequest = async (
     endpoint,
     method,
     body = undefined
 ) => {
-    /*if (unauthorized) {
+    if (unauthorized) {
         const error = new Error("Unauthorized");
         error.status = 401;
         return { data: undefined, error: error };
-    }*/
+    }
 
     const request = {
         method: method,
@@ -50,7 +67,7 @@ export const sendAuthorizedRequest = async (
 
     const response = await fetch(Config.restAddress + endpoint, request);
     if (response.status === 401 || response.status === 403) {
-        //unauthorized = true;
+        unauthorized = true;
         const error = new Error("Unauthorized");
         error.status = 401;
         return { data: undefined, error: error };
@@ -68,4 +85,19 @@ export const sendAuthorizedRequest = async (
         data: json,
         error: undefined,
     };
+};
+
+export const authorizedFetcher = async (url) => {
+    let endpoint = "/" + url.split("/")[url.split("/").length - 1];
+
+    const { data, error } = await sendAuthorizedRequest(endpoint, "GET");
+    if (error !== undefined) {
+        throw error;
+    }
+
+    return data;
+};
+
+export const refreshSessionSession = () => {
+    unauthorized = false;
 };

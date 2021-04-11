@@ -75,10 +75,10 @@ public class RootController {
             }
 
             Meme meme = optional.get();
-            user.vote(meme, vote.isPlus());
+            int newState = user.vote(meme, vote.isPlus());
             meme = this.memeRepository.save(meme);
 
-            return new VoteResponseDto(meme.getVotes());
+            return new VoteResponseDto(meme.getVotes(), newState);
         }
 
         Optional<Comment> optional = this.commentRepository.findById(vote.getId());
@@ -87,10 +87,10 @@ public class RootController {
         }
 
         Comment comment = optional.get();
-        user.vote(comment, vote.isPlus());
+        int newState = user.vote(comment, vote.isPlus());
         comment = commentRepository.save(comment);
 
-        return new VoteResponseDto(comment.getVotes());
+        return new VoteResponseDto(comment.getVotes(), newState);
     }
 
     @GetMapping("/user")

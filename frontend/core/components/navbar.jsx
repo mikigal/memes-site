@@ -1,5 +1,6 @@
 import * as UI from "@chakra-ui/react";
-import * as Config from "./config.json";
+
+import * as Config from "../config.json";
 
 import { BellIcon } from "@chakra-ui/icons";
 import { useRouter } from "next/router";

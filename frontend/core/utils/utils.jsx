@@ -1,5 +1,6 @@
 import * as UI from "@chakra-ui/react";
-import * as Config from "./config.json";
+import * as Config from "../config.json";
+
 import { AiOutlinePlus, AiOutlineMinus } from "react-icons/ai";
 
 export const ErrorAlert = (props) => {
@@ -28,7 +29,15 @@ export const ErrorAlert = (props) => {
 };
 
 export const VoteButton = (props) => {
-    const { plus, size, onClick } = props;
+    const { plus, size, voted, onClick } = props;
+    let colored =
+        (plus === "true" && voted === true) ||
+        (plus === "false" && voted === false);
+
+    let border = "1px solid " + Config.Text;
+    if (colored) {
+        border = "1px solid " + Config.Accent;
+    }
 
     return (
         <UI.Flex
@@ -36,9 +45,9 @@ export const VoteButton = (props) => {
             height={size}
             justifyContent="center"
             alignItems="center"
-            border={"1px solid " + Config.Text}
+            border={border}
             borderRadius="5px"
-            color={Config.Text}
+            color={colored ? Config.Accent : Config.Text}
             transition="color 0.15s ease, border-color 0.15s ease"
             _hover={{
                 color: Config.Accent,
@@ -78,41 +87,6 @@ export const timeSince = (date) => {
         ];
 
     return a[0] + " " + a[1] + (a[0] === 1 ? "" : "s") + suffix;
-};
-
-let unauthorized = false;
-export const sessionFetcher = async () => {
-    if (unauthorized) {
-        const error = new Error("Unauthorized");
-        error.status = 401;
-        throw error;
-    }
-
-    const response = await fetch(Config.restAddress + "/user", {
-        method: "GET",
-        mode: "cors",
-        credentials: "include",
-    });
-
-    if (response.status === 401 || response.status === 403) {
-        unauthorized = true;
-        const error = new Error("Unauthorized");
-        error.status = 401;
-        throw error;
-    }
-
-    if (!response.ok && response.status !== 401 && response.status !== 403) {
-        const error = new Error("An error occurred while fetching the data.");
-        error.status = response.status;
-        error.info = await response.json();
-        throw error;
-    }
-
-    return await response.json();
-};
-
-export const refreshSessionFetcher = () => {
-    unauthorized = false;
 };
 
 export const fetcher = async (url) => {

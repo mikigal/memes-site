@@ -1,19 +1,23 @@
 import * as UI from "@chakra-ui/react";
-import * as Config from "./config.json";
-import * as API from "./api";
 
-import { VoteButton, sendAuthorizedRequest } from "./utils";
+import * as Config from "../config.json";
+import * as API from "../utils/api";
+import { timeSince, VoteButton } from "../utils/utils";
 
-import { timeSince } from "../core/utils";
 import { useState } from "react";
 
 export const CommentsSection = (props) => {
     const { comments } = props;
+    const { loading, user } = API.getUser();
 
     const [sortedComments, setSortedComments] = useState(
         comments.sort(compareByTime).slice()
     );
     const [sortMode, setSortMode] = useState(0);
+
+    if (loading) {
+        return <UI.Text>Loading...</UI.Text>;
+    }
 
     return (
         <UI.VStack
@@ -72,9 +76,11 @@ export const CommentsSection = (props) => {
                     id={comment.id}
                     content={comment.content}
                     author={comment.author}
+                    authorAvatar={comment.authorAvatar}
                     votes={comment.votes}
                     uploadDate={comment.uploadDate}
                     replies={comment.replies}
+                    user={user}
                 />
             ))}
         </UI.VStack>
@@ -82,17 +88,27 @@ export const CommentsSection = (props) => {
 };
 
 const Comment = (props) => {
-    const { id, author, votes, content, uploadDate, replies } = props;
+    const {
+        id,
+        author,
+        authorAvatar,
+        votes,
+        content,
+        uploadDate,
+        replies,
+        user,
+    } = props;
+    const userVote = user === undefined ? undefined : user.votedComments[id];
+
     const toast = UI.useToast();
     const [currentVotes, setCurrentVotes] = useState(votes);
+    const [currentUserVote, setCurrentUserVote] = useState(userVote);
 
     return (
         <UI.Box width="100%" paddingBottom="15px">
             <UI.HStack>
                 <UI.Image
-                    src={
-                        Config.restAddress + "/uploads/users/" + author + ".png"
-                    }
+                    src={Config.restAddress + "/uploads/users/" + authorAvatar}
                     width="45px"
                     height="45px"
                     borderRadius="5px"
@@ -107,10 +123,20 @@ const Comment = (props) => {
                 <VoteButton
                     plus="true"
                     size="27px"
+                    voted={currentUserVote}
                     onClick={async () => {
-                        let newVotes = await API.vote(id, false, true, toast);
-                        if (newVotes != undefined) {
-                            setCurrentVotes(newVotes);
+                        const response = await API.vote(id, false, true, toast);
+
+                        if (response === undefined) {
+                            return;
+                        }
+
+                        let { newVotes, newState } = response;
+                        setCurrentVotes(newVotes);
+                        if (newState === -1) {
+                            setCurrentUserVote(undefined);
+                        } else {
+                            setCurrentUserVote(newState === 1);
                         }
                     }}
                 />
@@ -122,10 +148,25 @@ const Comment = (props) => {
                 <VoteButton
                     plus="false"
                     size="27px"
+                    voted={currentUserVote}
                     onClick={async () => {
-                        let newVotes = await API.vote(id, false, false, toast);
-                        if (newVotes != undefined) {
-                            setCurrentVotes(newVotes);
+                        const response = await API.vote(
+                            id,
+                            false,
+                            false,
+                            toast
+                        );
+
+                        if (response === undefined) {
+                            return;
+                        }
+
+                        let { newVotes, newState } = response;
+                        setCurrentVotes(newVotes);
+                        if (newState === -1) {
+                            setCurrentUserVote(undefined);
+                        } else {
+                            setCurrentUserVote(newState === 1);
                         }
                     }}
                 />
@@ -141,8 +182,14 @@ const Comment = (props) => {
                     id={reply.id}
                     content={reply.content}
                     author={reply.author}
+                    authorAvatar={reply.authorAvatar}
                     votes={reply.votes}
                     uploadDate={reply.uploadDate}
+                    userVote={
+                        user === undefined
+                            ? undefined
+                            : user.votedComments[reply.id]
+                    }
                 />
             ))}
         </UI.Box>
@@ -150,17 +197,24 @@ const Comment = (props) => {
 };
 
 const Reply = (props) => {
-    const { id, author, votes, content, uploadDate } = props;
+    const {
+        id,
+        author,
+        authorAvatar,
+        votes,
+        content,
+        uploadDate,
+        userVote,
+    } = props;
     const toast = UI.useToast();
     const [currentVotes, setCurrentVotes] = useState(votes);
+    const [currentUserVote, setCurrentUserVote] = useState(userVote);
 
     return (
         <UI.Box marginLeft="7%" width="93%" paddingTop="15px">
             <UI.HStack>
                 <UI.Image
-                    src={
-                        Config.restAddress + "/uploads/users/" + author + ".png"
-                    }
+                    src={Config.restAddress + "/uploads/users/" + authorAvatar}
                     width="45px"
                     height="45px"
                     borderRadius="5px"
@@ -176,29 +230,49 @@ const Reply = (props) => {
                 <VoteButton
                     plus="true"
                     size="27px"
+                    voted={currentUserVote}
                     onClick={async () => {
-                        let newVotes = await API.vote(id, false, true, toast);
-                        if (newVotes != undefined) {
-                            setCurrentVotes(newVotes);
+                        const response = await API.vote(id, false, true, toast);
+
+                        if (response === undefined) {
+                            return;
+                        }
+
+                        let { newVotes, newState } = response;
+                        setCurrentVotes(newVotes);
+                        if (newState === -1) {
+                            setCurrentUserVote(undefined);
+                        } else {
+                            setCurrentUserVote(newState === 1);
                         }
                     }}
                 />
-                <UI.Text
-                    fontSize="xl"
-                    fontWeight="bold"
-                    paddingLeft="6px"
-                    paddingRight="5px"
-                >
+                <UI.Text fontSize="xl" fontWeight="bold">
                     {currentVotes}
                 </UI.Text>
 
                 <VoteButton
                     plus="false"
                     size="27px"
+                    voted={currentUserVote}
                     onClick={async () => {
-                        let newVotes = await API.vote(id, false, false, toast);
-                        if (newVotes != undefined) {
-                            setCurrentVotes(newVotes);
+                        const response = await API.vote(
+                            id,
+                            false,
+                            false,
+                            toast
+                        );
+
+                        if (response === undefined) {
+                            return;
+                        }
+
+                        let { newVotes, newState } = response;
+                        setCurrentVotes(newVotes);
+                        if (newState === -1) {
+                            setCurrentUserVote(undefined);
+                        } else {
+                            setCurrentUserVote(newState === 1);
                         }
                     }}
                 />

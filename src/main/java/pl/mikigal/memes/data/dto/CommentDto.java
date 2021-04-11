@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 public class CommentDto {
     private final int id;
     private final String author;
+    private final String authorAvatar;
     private final int votes;
     private final String content;
     private final long uploadDate;
@@ -21,6 +22,7 @@ public class CommentDto {
     public CommentDto(Meme meme, Comment comment) {
         this.id = comment.getId();
         this.author = comment.getAuthor().getUsername();
+        this.authorAvatar = comment.getAuthor().getAvatar();
         this.votes = comment.getVotes();
         this.content = comment.getContent();
         this.uploadDate = comment.getUploadDate().getTime();

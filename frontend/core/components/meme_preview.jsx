@@ -1,20 +1,31 @@
 import * as UI from "@chakra-ui/react";
-import * as Config from "./config";
-import * as API from "./api";
 
-import { VoteButton } from "./utils";
+import * as Config from "../config";
+import * as API from "../utils/api";
+import { VoteButton, timeSince } from "../utils/utils";
+
 import { ChatIcon } from "@chakra-ui/icons";
 import { useState, useEffect } from "react";
-
-import { timeSince } from "./utils";
 import Link from "next/link";
 
 export const Meme = (props) => {
-    const { id, title, author, uploadDate, comments, votes, image } = props;
+    const {
+        id,
+        title,
+        author,
+        uploadDate,
+        comments,
+        votes,
+        image,
+        user,
+    } = props;
+
+    const userVote = user === undefined ? undefined : user.votedMemes[id];
 
     const toast = UI.useToast();
     const [currentVotes, setCurrentVotes] = useState(votes);
     const [commentsAmount, setCommentsAmount] = useState(0);
+    const [currentUserVote, setCurrentUserVote] = useState(userVote);
 
     useEffect(() => {
         let amount = 0;
@@ -42,12 +53,12 @@ export const Meme = (props) => {
                 spacing={0}
             >
                 <UI.Heading size="lg" fontWeight="bold" paddingLeft="10px">
-                    <Link href={"/meme?id=" + id}>{title}</Link>
+                    <Link href={"/meme/" + id}>{title}</Link>
                 </UI.Heading>
 
                 <UI.Spacer />
 
-                <Link href={"/meme?id=" + id}>
+                <Link href={"/meme/" + id}>
                     <a>
                         <UI.HStack>
                             <ChatIcon fontSize="lg" fontWeight="bold" />
@@ -59,7 +70,7 @@ export const Meme = (props) => {
                 </Link>
             </UI.HStack>
 
-            <Link href={"/meme?id=" + id} marginTop="10px" paddingBottom="10px">
+            <Link href={"/meme/" + id} marginTop="10px" paddingBottom="10px">
                 <UI.Image
                     src={Config.restAddress + "/uploads/memes/" + image}
                     width="100%"
@@ -93,10 +104,20 @@ export const Meme = (props) => {
                 <VoteButton
                     plus="true"
                     size="32px"
+                    voted={currentUserVote}
                     onClick={async () => {
-                        let newVotes = await API.vote(id, true, true, toast);
-                        if (newVotes != undefined) {
-                            setCurrentVotes(newVotes);
+                        const response = await API.vote(id, true, true, toast);
+
+                        if (response === undefined) {
+                            return;
+                        }
+
+                        let { newVotes, newState } = response;
+                        setCurrentVotes(newVotes);
+                        if (newState === -1) {
+                            setCurrentUserVote(undefined);
+                        } else {
+                            setCurrentUserVote(newState === 1);
                         }
                     }}
                 />
@@ -113,10 +134,20 @@ export const Meme = (props) => {
                 <VoteButton
                     plus="false"
                     size="32px"
+                    voted={currentUserVote}
                     onClick={async () => {
-                        let newVotes = await API.vote(id, true, false, toast);
-                        if (newVotes != undefined) {
-                            setCurrentVotes(newVotes);
+                        const response = await API.vote(id, true, false, toast);
+
+                        if (response === undefined) {
+                            return;
+                        }
+
+                        let { newVotes, newState } = response;
+                        setCurrentVotes(newVotes);
+                        if (newState === -1) {
+                            setCurrentUserVote(undefined);
+                        } else {
+                            setCurrentUserVote(newState === 1);
                         }
                     }}
                 />

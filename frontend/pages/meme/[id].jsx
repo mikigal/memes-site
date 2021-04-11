@@ -1,21 +1,24 @@
 import * as UI from "@chakra-ui/react";
-import * as Config from "../core/config.json";
-import { useRouter } from "next/router";
-import { useEffect } from "react";
-import { Meme } from "../core/meme_preview";
-import { CommentsSection } from "../core/comments_section";
-import { fetcher, ErrorAlert } from "../core/utils";
 
+import * as API from "../../core/utils/api";
+import * as Config from "../../core/config.json";
+import { fetcher, ErrorAlert } from "../../core/utils/utils";
+import { Meme } from "../../core/components/meme_preview";
+import { CommentsSection } from "../../core/components/comments_section";
+
+import { useRouter } from "next/router";
 import useSWR from "swr";
 
 export default function MemeView() {
     const router = useRouter();
-    const memeId = router.query.id === undefined ? -1 : router.query.id;
+    const { id } = router.query;
 
-    const { data, error } = useSWR(
-        Config.restAddress + "/meme/" + memeId,
-        fetcher
-    );
+    const { data, error } = useSWR(Config.restAddress + "/meme/" + id, fetcher);
+    const { loading, user } = API.getUser();
+
+    if (loading) {
+        return <UI.Text>Loading...</UI.Text>;
+    }
 
     if (error) {
         return (
@@ -44,6 +47,7 @@ export default function MemeView() {
                 votes={data.votes}
                 comments={data.comments}
                 image={data.image}
+                user={user}
             />
 
             <CommentsSection comments={data.comments} />
