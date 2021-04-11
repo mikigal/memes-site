@@ -28,15 +28,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final UserDetailsServiceImpl userDetailsService;
     private final RestAuthenticationSuccessHandler authenticationSuccessHandler;
     private final RestAuthenticationFailureHandler authenticationFailureHandler;
+    private final RestAuthenticationLogoutHandler authenticationLogoutHandler;
 
     public SecurityConfiguration(@Value("${memes.corsAllowed}") String corsAllowed,
                                  UserDetailsServiceImpl userDetailsService,
                                  RestAuthenticationSuccessHandler authenticationSuccessHandler,
-                                 RestAuthenticationFailureHandler authenticationFailureHandler) {
+                                 RestAuthenticationFailureHandler authenticationFailureHandler,
+                                 RestAuthenticationLogoutHandler authenticationLogoutHandler) {
         this.corsAllowed = corsAllowed;
         this.userDetailsService = userDetailsService;
         this.authenticationSuccessHandler = authenticationSuccessHandler;
         this.authenticationFailureHandler = authenticationFailureHandler;
+        this.authenticationLogoutHandler = authenticationLogoutHandler;
     }
 
     @Override
@@ -54,6 +57,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .logout().logoutSuccessHandler(this.authenticationLogoutHandler)
+                .and()
                 .exceptionHandling()
                 .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                 .and()

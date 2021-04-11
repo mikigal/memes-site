@@ -9,24 +9,19 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 
 export const Meme = (props) => {
-    const {
-        id,
-        title,
-        author,
-        uploadDate,
-        comments,
-        votes,
-        image,
-        user,
-    } = props;
+    const { id, title, author, uploadDate, comments, votes, image } = props;
 
-    const userVote = user === undefined ? undefined : user.votedMemes[id];
-
-    const toast = UI.useToast();
+    const { loading, user } = API.useUser();
+    const vote = API.useVote();
     const [currentVotes, setCurrentVotes] = useState(votes);
     const [commentsAmount, setCommentsAmount] = useState(0);
     const [currentUserVote, setCurrentUserVote] = useState(userVote);
 
+    if (loading) {
+        return <UI.Text>Loading...</UI.Text>;
+    }
+
+    const userVote = user === undefined ? undefined : user.votedMemes[id];
     useEffect(() => {
         let amount = 0;
         comments.forEach((comment) => {
@@ -106,7 +101,7 @@ export const Meme = (props) => {
                     size="32px"
                     voted={currentUserVote}
                     onClick={async () => {
-                        const response = await API.vote(id, true, true, toast);
+                        const response = await vote(id, true, true);
 
                         if (response === undefined) {
                             return;
@@ -136,7 +131,7 @@ export const Meme = (props) => {
                     size="32px"
                     voted={currentUserVote}
                     onClick={async () => {
-                        const response = await API.vote(id, true, false, toast);
+                        const response = await vote(id, true, false);
 
                         if (response === undefined) {
                             return;

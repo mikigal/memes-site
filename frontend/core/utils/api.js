@@ -1,31 +1,43 @@
+import * as UI from "@chakra-ui/react";
 import * as Config from "../config.json";
 
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 
-export const vote = async (id, meme, plus, toast) => {
-    const { data, error } = await sendAuthorizedRequest("/vote", "POST", {
-        id: id,
-        meme: meme,
-        plus: plus,
-    });
+export const useVote = () => {
+    const toast = UI.useToast();
 
-    if (error) {
-        toast({
-            title: "Login required",
-            description: "You must be logged in to do that",
-            status: "error",
-            duration: 6000,
-            isClosable: true,
-            position: "bottom-right",
+    const vote = async (id, meme, plus) => {
+        const { data, error } = await sendAuthorizedRequest("/vote", "POST", {
+            id: id,
+            meme: meme,
+            plus: plus,
         });
 
-        return undefined;
-    }
+        if (error) {
+            toast({
+                title: "Login required",
+                description: "You must be logged in to do that",
+                status: "error",
+                duration: 6000,
+                isClosable: true,
+                position: "bottom-right",
+            });
 
-    return { newVotes: data.newVotes, newState: data.newState };
+            return undefined;
+        }
+
+        return { newVotes: data.newVotes, newState: data.newState };
+    };
+
+    return vote;
 };
 
-export const getUser = () => {
+export const logout = async () => {
+    await sendAuthorizedRequest("/logout", "GET");
+    refreshSessionState();
+};
+
+export const useUser = () => {
     const { data, error } = useSWR(
         Config.restAddress + "/user",
         authorizedFetcher
@@ -98,6 +110,7 @@ export const authorizedFetcher = async (url) => {
     return data;
 };
 
-export const refreshSessionSession = () => {
+export const refreshSessionState = () => {
     unauthorized = false;
+    mutate(Config.restAddress + "/user");
 };

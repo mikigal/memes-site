@@ -8,16 +8,11 @@ import { useState } from "react";
 
 export const CommentsSection = (props) => {
     const { comments } = props;
-    const { loading, user } = API.getUser();
 
     const [sortedComments, setSortedComments] = useState(
         comments.sort(compareByTime).slice()
     );
     const [sortMode, setSortMode] = useState(0);
-
-    if (loading) {
-        return <UI.Text>Loading...</UI.Text>;
-    }
 
     return (
         <UI.VStack
@@ -80,7 +75,6 @@ export const CommentsSection = (props) => {
                     votes={comment.votes}
                     uploadDate={comment.uploadDate}
                     replies={comment.replies}
-                    user={user}
                 />
             ))}
         </UI.VStack>
@@ -96,13 +90,18 @@ const Comment = (props) => {
         content,
         uploadDate,
         replies,
-        user,
     } = props;
-    const userVote = user === undefined ? undefined : user.votedComments[id];
 
-    const toast = UI.useToast();
     const [currentVotes, setCurrentVotes] = useState(votes);
     const [currentUserVote, setCurrentUserVote] = useState(userVote);
+    const vote = API.useVote();
+
+    const { loading, user } = API.useUser();
+    if (loading) {
+        return <UI.Text>Loading...</UI.Text>;
+    }
+
+    const userVote = user === undefined ? undefined : user.votedComments[id];
 
     return (
         <UI.Box width="100%" paddingBottom="15px">
@@ -125,7 +124,7 @@ const Comment = (props) => {
                     size="27px"
                     voted={currentUserVote}
                     onClick={async () => {
-                        const response = await API.vote(id, false, true, toast);
+                        const response = await vote(id, false, true);
 
                         if (response === undefined) {
                             return;
@@ -150,12 +149,7 @@ const Comment = (props) => {
                     size="27px"
                     voted={currentUserVote}
                     onClick={async () => {
-                        const response = await API.vote(
-                            id,
-                            false,
-                            false,
-                            toast
-                        );
+                        const response = await vote(id, false, false);
 
                         if (response === undefined) {
                             return;
@@ -206,7 +200,8 @@ const Reply = (props) => {
         uploadDate,
         userVote,
     } = props;
-    const toast = UI.useToast();
+
+    const vote = API.useVote();
     const [currentVotes, setCurrentVotes] = useState(votes);
     const [currentUserVote, setCurrentUserVote] = useState(userVote);
 
@@ -232,7 +227,7 @@ const Reply = (props) => {
                     size="27px"
                     voted={currentUserVote}
                     onClick={async () => {
-                        const response = await API.vote(id, false, true, toast);
+                        const response = await vote(id, false, true);
 
                         if (response === undefined) {
                             return;
@@ -256,12 +251,7 @@ const Reply = (props) => {
                     size="27px"
                     voted={currentUserVote}
                     onClick={async () => {
-                        const response = await API.vote(
-                            id,
-                            false,
-                            false,
-                            toast
-                        );
+                        const response = await vote(id, false, false);
 
                         if (response === undefined) {
                             return;

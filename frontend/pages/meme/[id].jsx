@@ -1,6 +1,5 @@
 import * as UI from "@chakra-ui/react";
 
-import * as API from "../../core/utils/api";
 import * as Config from "../../core/config.json";
 import { fetcher, ErrorAlert } from "../../core/utils/utils";
 import { Meme } from "../../core/components/meme_preview";
@@ -14,7 +13,6 @@ export default function MemeView() {
     const { id } = router.query;
 
     const { data, error } = useSWR(Config.restAddress + "/meme/" + id, fetcher);
-    const { loading, user } = API.getUser();
 
     if (loading) {
         return <UI.Text>Loading...</UI.Text>;
@@ -47,7 +45,6 @@ export default function MemeView() {
                 votes={data.votes}
                 comments={data.comments}
                 image={data.image}
-                user={user}
             />
 
             <CommentsSection comments={data.comments} />

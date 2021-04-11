@@ -17,8 +17,6 @@ export default function Index() {
         fetcher
     );
 
-    const { loading, user } = API.getUser();
-
     if (loading) {
         return <UI.Text>Loading...</UI.Text>;
     }
@@ -52,7 +50,6 @@ export default function Index() {
                     votes={meme.votes}
                     comments={meme.comments}
                     image={meme.image}
-                    user={user}
                 />
             ))}
         </>
