@@ -42,7 +42,7 @@ export default function MemeView() {
                 author={data.author}
                 uploadDate={data.uploadDate}
                 votes={data.votes}
-                commentsAmount={data.comments.length}
+                comments={data.comments}
                 image={data.image}
             />
 

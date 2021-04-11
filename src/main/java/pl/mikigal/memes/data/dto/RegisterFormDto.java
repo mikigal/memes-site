@@ -1,21 +1,21 @@
 package pl.mikigal.memes.data.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.ToString;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
 
-@ToString
 @Getter
+@AllArgsConstructor
 public class RegisterFormDto {
 
     @Size(min = 6, max = 16)
-    private String username;
+    private final String username;
 
     @Size(min = 6, max = 32)
-    private String password;
+    private final String password;
 
     @Email
-    private String mail;
+    private final String mail;
 }

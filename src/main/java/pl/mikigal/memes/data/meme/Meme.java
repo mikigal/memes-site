@@ -2,19 +2,18 @@ package pl.mikigal.memes.data.meme;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.Setter;
 import pl.mikigal.memes.data.comment.Comment;
 import pl.mikigal.memes.data.user.User;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Getter
+@Setter
 @NoArgsConstructor
-@ToString
 @Entity
+@Table(name = "memes")
 public class Meme {
 
     @Id
@@ -25,15 +24,27 @@ public class Meme {
 
     @ManyToOne
     private User author;
+
     private String title;
     private Date uploadDate;
     private int votes;
 
-    @OneToMany
-    private List<Comment> comments;
+    @OneToMany(mappedBy = "meme")
+    private Set<Comment> comments;
 
-    @OneToMany
-    private List<User> votedUsers;
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinTable(name = "vote_memes_plus",
+            joinColumns = @JoinColumn(name = "meme_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<User> votedPlusUsers;
+
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinTable(name = "vote_memes_minus",
+            joinColumns = @JoinColumn(name = "meme_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<User> votedMinusUsers;
 
     public Meme(User author, String title, String image) {
         this.image = image;
@@ -41,6 +52,6 @@ public class Meme {
         this.title = title;
         this.uploadDate = new Date();
         this.votes = 0;
-        this.comments = new ArrayList<>();
+        this.comments = new HashSet<>();
     }
 }

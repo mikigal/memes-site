@@ -13,7 +13,7 @@ export const Profile = () => {
     );
 
     if (error) {
-        if (error.status === 403) {
+        if (error.status === 401) {
             return (
                 <UI.Box width="320px" marginLeft="20px">
                     <Formik

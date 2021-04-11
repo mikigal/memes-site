@@ -1,5 +1,6 @@
 import * as UI from "@chakra-ui/react";
 import * as Config from "./config.json";
+import { AiOutlinePlus, AiOutlineMinus } from "react-icons/ai";
 
 export const ErrorAlert = (props) => {
     const { title, description } = props;
@@ -23,6 +24,33 @@ export const ErrorAlert = (props) => {
                 {description}
             </UI.AlertDescription>
         </UI.Alert>
+    );
+};
+
+export const VoteButton = (props) => {
+    const { plus, size, onClick } = props;
+
+    return (
+        <UI.Flex
+            width={size}
+            height={size}
+            justifyContent="center"
+            alignItems="center"
+            border={"1px solid " + Config.Text}
+            borderRadius="5px"
+            color={Config.Text}
+            transition="color 0.15s ease, border-color 0.15s ease"
+            _hover={{
+                color: Config.Accent,
+                borderColor: Config.Accent,
+            }}
+            onClick={onClick}
+        >
+            <UI.Icon
+                as={plus === "true" ? AiOutlinePlus : AiOutlineMinus}
+                fontSize="lg"
+            />
+        </UI.Flex>
     );
 };
 
@@ -56,7 +84,7 @@ let unauthorized = false;
 export const sessionFetcher = async () => {
     if (unauthorized) {
         const error = new Error("Unauthorized");
-        error.status = 403;
+        error.status = 401;
         throw error;
     }
 
@@ -69,7 +97,7 @@ export const sessionFetcher = async () => {
     if (response.status === 401 || response.status === 403) {
         unauthorized = true;
         const error = new Error("Unauthorized");
-        error.status = 403;
+        error.status = 401;
         throw error;
     }
 

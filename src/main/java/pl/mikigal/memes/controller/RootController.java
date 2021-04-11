@@ -1,11 +1,15 @@
 package pl.mikigal.memes.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import pl.mikigal.memes.data.comment.Comment;
 import pl.mikigal.memes.data.comment.CommentRepository;
 import pl.mikigal.memes.data.dto.MemeDto;
+import pl.mikigal.memes.data.dto.UserDto;
+import pl.mikigal.memes.data.dto.VoteDto;
+import pl.mikigal.memes.data.dto.VoteResponseDto;
 import pl.mikigal.memes.data.meme.Meme;
 import pl.mikigal.memes.data.meme.MemeRepository;
 import pl.mikigal.memes.data.user.User;
@@ -57,28 +61,63 @@ public class RootController {
                 .collect(Collectors.toList());
     }
 
+    @PostMapping("/vote")
+    public Object voteMeme(@RequestBody VoteDto vote, Authentication authentication) {
+        User user = this.userRepository.findByUsernameOrMail(authentication.getName(), authentication.getName());
+        if (user == null) {
+            return ResponseEntity.badRequest().body("invalid user");
+        }
+
+        if (vote.isMeme()) {
+            Optional<Meme> optional = this.memeRepository.findById(vote.getId());
+            if (!optional.isPresent()) {
+                return ResponseEntity.badRequest().body("invalid id");
+            }
+
+            Meme meme = optional.get();
+            user.vote(meme, vote.isPlus());
+            meme = this.memeRepository.save(meme);
+
+            return new VoteResponseDto(meme.getVotes());
+        }
+
+        Optional<Comment> optional = this.commentRepository.findById(vote.getId());
+        if (!optional.isPresent()) {
+            return ResponseEntity.badRequest().body("invalid id");
+        }
+
+        Comment comment = optional.get();
+        user.vote(comment, vote.isPlus());
+        comment = commentRepository.save(comment);
+
+        return new VoteResponseDto(comment.getVotes());
+    }
+
     @GetMapping("/user")
-    public Object user() {
-        return "{\"x\": \"something\"}";
+    public Object user(Authentication authentication) {
+        User user = this.userRepository.findByUsernameOrMail(authentication.getName(), authentication.getName());
+        if (user == null) {
+            return ResponseEntity.badRequest().body("invalid user");
+        }
+
+        return new UserDto(user);
     }
 
     @GetMapping("/temp")
     public Object temp() {
-        User user = new User("mikigal", new BCryptPasswordEncoder().encode("zaq1@WSX"), "mikigal.priv@gmail.com");
-        user = userRepository.save(user);
+        User mikigal = this.userRepository.save(new User("mikigal", new BCryptPasswordEncoder().encode("zaq1@WSX"), "mikigal.priv@gmail.com"));
+        User socket = this.userRepository.save(new User("SocketByte", new BCryptPasswordEncoder().encode("zaq1@WSX"), "mikigal.priv@gmail.com"));
 
-        User second = new User("SocketByte", new BCryptPasswordEncoder().encode("zaq1@WSX"), "a01@mikigal.pl");
-        second = userRepository.save(second);
+        Meme first = this.memeRepository.save(new Meme(mikigal, "First meme", "d73e1522-452b-40ef-bd3f-6dd5dd3749b8.png"));
+        Meme second = this.memeRepository.save(new Meme(mikigal, "Second meme", "54a33173-4954-4697-9857-dd15f53323e6.png"));
+        Meme third = this.memeRepository.save( new Meme(socket, "Third meme", "fb2f9e61-ef9f-40eb-95bc-c8da39f9c82b.png"));
 
-        Meme meme = new Meme(user, "Example meme", "54a33173-4954-4697-9857-dd15f53323e6.png");
-        meme = memeRepository.save(meme);
+        Comment firstComment = this.commentRepository.save(
+                new Comment(socket, third, "Therefore, database queries may be performed during view rendering. Explicitly configure", null));
+        Comment secondComment = this.commentRepository.save(
+                new Comment(socket, third, "Finished Spring Data repository scanning in 33 ms. Found 3 JPA repository interfaces.", null));
+        Comment reply = this.commentRepository.save(new Comment(mikigal, third, "It's reply!", secondComment));
 
-        Comment comment = new Comment(second, meme, "Twoj stary pijany odbija sie od sciany");
-        comment = commentRepository.save(comment);
-
-        meme.getComments().add(comment);
-        meme = memeRepository.save(meme);
-
-        return "success";
+        return "succ";
     }
 }

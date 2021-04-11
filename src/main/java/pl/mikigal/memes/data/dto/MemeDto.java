@@ -24,7 +24,8 @@ public class MemeDto {
         this.uploadDate = meme.getUploadDate().getTime();
         this.votes = meme.getVotes();
         this.comments = meme.getComments().stream()
-                .map(CommentDto::new)
+                .filter(comment -> !comment.isReply())
+                .map(comment -> new CommentDto(meme, comment))
                 .collect(Collectors.toList());
     }
 }

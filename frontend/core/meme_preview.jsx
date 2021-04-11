@@ -1,21 +1,29 @@
 import * as UI from "@chakra-ui/react";
 import * as Config from "./config";
+import * as API from "./api";
+
+import { VoteButton } from "./utils";
 import { ChatIcon } from "@chakra-ui/icons";
-import { AiOutlinePlus, AiOutlineMinus } from "react-icons/ai";
+import { useState, useEffect } from "react";
 
 import { timeSince } from "./utils";
 import Link from "next/link";
 
 export const Meme = (props) => {
-    const {
-        id,
-        title,
-        author,
-        uploadDate,
-        commentsAmount,
-        votes,
-        image,
-    } = props;
+    const { id, title, author, uploadDate, comments, votes, image } = props;
+
+    const toast = UI.useToast();
+    const [currentVotes, setCurrentVotes] = useState(votes);
+    const [commentsAmount, setCommentsAmount] = useState(0);
+
+    useEffect(() => {
+        let amount = 0;
+        comments.forEach((comment) => {
+            amount += comment.replies.length + 1;
+        });
+
+        setCommentsAmount(amount);
+    }, []);
 
     return (
         <UI.VStack
@@ -82,20 +90,16 @@ export const Meme = (props) => {
 
                 <UI.Spacer />
 
-                <UI.Button
-                    type="submit"
-                    variant="outline"
-                    borderColor={Config.Text}
-                    color={Config.Text}
-                    width="35px"
-                    height="35px"
-                    _hover={{
-                        color: Config.Accent,
-                        borderColor: Config.Accent,
+                <VoteButton
+                    plus="true"
+                    size="32px"
+                    onClick={async () => {
+                        let newVotes = await API.vote(id, true, true, toast);
+                        if (newVotes != undefined) {
+                            setCurrentVotes(newVotes);
+                        }
                     }}
-                >
-                    <UI.Icon as={AiOutlinePlus} fontSize="lg" />
-                </UI.Button>
+                />
 
                 <UI.Text
                     fontSize="lg"
@@ -103,23 +107,19 @@ export const Meme = (props) => {
                     paddingLeft="10px"
                     paddingRight="10px"
                 >
-                    {votes}
+                    {currentVotes}
                 </UI.Text>
 
-                <UI.Button
-                    type="submit"
-                    variant="outline"
-                    borderColor={Config.Text}
-                    color={Config.Text}
-                    width="35px"
-                    height="35px"
-                    _hover={{
-                        color: Config.Accent,
-                        borderColor: Config.Accent,
+                <VoteButton
+                    plus="false"
+                    size="32px"
+                    onClick={async () => {
+                        let newVotes = await API.vote(id, true, false, toast);
+                        if (newVotes != undefined) {
+                            setCurrentVotes(newVotes);
+                        }
                     }}
-                >
-                    <UI.Icon as={AiOutlineMinus} fontSize="lg" />
-                </UI.Button>
+                />
             </UI.HStack>
         </UI.VStack>
     );
