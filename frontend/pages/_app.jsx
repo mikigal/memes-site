@@ -1,7 +1,7 @@
 import * as UI from "@chakra-ui/react";
 import * as Config from "../core/config.json";
 import { Navbar } from "../core/navbar";
-import { Profile } from "../core/sidebar";
+import { Profile } from "../core/profile";
 import { createBreakpoints } from "@chakra-ui/theme-tools";
 
 import Router from "next/router";

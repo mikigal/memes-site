@@ -57,6 +57,11 @@ public class RootController {
                 .collect(Collectors.toList());
     }
 
+    @GetMapping("/user")
+    public Object user() {
+        return "{\"x\": \"something\"}";
+    }
+
     @GetMapping("/temp")
     public Object temp() {
         User user = new User("mikigal", new BCryptPasswordEncoder().encode("zaq1@WSX"), "mikigal.priv@gmail.com");

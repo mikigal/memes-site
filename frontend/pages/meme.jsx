@@ -2,12 +2,11 @@ import * as UI from "@chakra-ui/react";
 import * as Config from "../core/config.json";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
-import { Meme } from "../core/meme";
+import { Meme } from "../core/meme_preview";
 import { CommentsSection } from "../core/comments_section";
+import { fetcher, ErrorAlert } from "../core/utils";
 
 import useSWR from "swr";
-
-const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
 export default function MemeView() {
     const router = useRouter();
@@ -18,26 +17,12 @@ export default function MemeView() {
         fetcher
     );
 
-    if (error || (data && data.error)) {
+    if (error) {
         return (
-            <UI.Alert
-                status="error"
-                variant="subtle"
-                flexDirection="column"
-                alignItems="center"
-                justifyContent="center"
-                textAlign="center"
-                height="200px"
-                color={Config.BackgroundDarker}
-            >
-                <UI.AlertIcon boxSize="40px" mr={0} />
-                <UI.AlertTitle mt={4} mb={1} fontSize="lg">
-                    Something went wrong!
-                </UI.AlertTitle>
-                <UI.AlertDescription maxWidth="sm">
-                    An error occurred while loading meme
-                </UI.AlertDescription>
-            </UI.Alert>
+            <ErrorAlert
+                title="Something went wrong!"
+                description=" An error occurred while loading meme"
+            />
         );
     }
 
