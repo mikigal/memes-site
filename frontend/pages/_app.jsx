@@ -2,6 +2,7 @@ import * as UI from "@chakra-ui/react";
 import * as Config from "../core/config.json";
 import { Navbar } from "../core/components/navbar";
 import { Profile } from "../core/components/profile";
+import { Recommendations } from "../core/components/recommendations";
 import { createBreakpoints } from "@chakra-ui/theme-tools";
 
 import Router from "next/router";
@@ -31,7 +32,7 @@ const theme = UI.extendTheme({
     },
     breakpoints: createBreakpoints({
         sm: "30em",
-        md: "48em",
+        md: "54em",
         lg: "62em",
         xl: "80em",
         "2xl": "128em",
@@ -43,8 +44,19 @@ const App = ({ Component, pageProps }) => {
         <UI.ChakraProvider theme={theme}>
             <Navbar />
             <UI.Box
-                marginLeft={{ base: "0", xl: "19%", "2xl": "27%" }}
-                marginRight={{ base: "0", xl: "19%", "2xl": "27%" }}
+                marginLeft={{
+                    base: "0",
+                    lg: "10%",
+                    xl: "19%",
+                    "2xl": "27%",
+                }}
+                marginRight={{
+                    base: "0",
+                    lg: "10%",
+                    xl: "19%",
+                    "2xl": "27%",
+                }}
+                padding="15px"
             >
                 <UI.Flex height="100%" width="100%" paddingTop="75px">
                     <UI.Box width={{ base: "100%", md: "60%" }}>
@@ -57,6 +69,7 @@ const App = ({ Component, pageProps }) => {
                         right={{ base: "0", "2xl": "20%" }}
                     >
                         <Profile />
+                        <Recommendations />
                     </UI.VStack>
                 </UI.Flex>
             </UI.Box>
@@ -65,3 +78,16 @@ const App = ({ Component, pageProps }) => {
 };
 
 export default App;
+
+/*<UI.Text
+    color={{
+        base: "red",
+        sm: "green",
+        md: "pink",
+        lg: "purple",
+        xl: "cyan",
+        "2xl": "white",
+    }}
+>
+    BREAKPOINT DEBUG
+</UI.Text>*/

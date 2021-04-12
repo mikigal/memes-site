@@ -36,15 +36,15 @@ export const Navbar = () => {
                 <NavbarSeparator />
 
                 <UI.Box>
-                    <BellIcon fontSize="30px" />
+                    <BellIcon fontSize={{ base: "25px", lg: "30px" }} />
 
                     <UI.Box
-                        width="9px"
-                        height="9px"
+                        width="8px"
+                        height="8px"
                         position="fixed"
                         zIndex="11"
-                        marginTop="-25px"
-                        marginLeft="17px"
+                        marginTop="-21px"
+                        marginLeft="13px"
                         borderRadius="360"
                         backgroundColor="red"
                     ></UI.Box>
@@ -60,7 +60,7 @@ const NavbarEntry = (props) => {
 
     return (
         <UI.Text
-            fontSize="xl"
+            fontSize={{ base: "lg", lg: "xl" }}
             transition="color 0.15s ease"
             color={router.asPath == target ? Config.Accent : Config.Text}
             _hover={{ color: Config.Accent }}

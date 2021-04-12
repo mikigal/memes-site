@@ -50,7 +50,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/login").permitAll()
                 .antMatchers("/register").permitAll()
                 .antMatchers("/memes").permitAll()
-                .antMatchers("/most_popular").permitAll()
+                .antMatchers("/recommendations").permitAll()
                 .antMatchers("/meme/**").permitAll()
                 .antMatchers("/uploads/**").permitAll()
                 .antMatchers("/temp").permitAll()

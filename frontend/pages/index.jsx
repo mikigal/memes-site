@@ -44,7 +44,7 @@ export default function Index() {
                     author={meme.author}
                     uploadDate={meme.uploadDate}
                     votes={meme.votes}
-                    comments={meme.comments}
+                    commentsAmount={meme.commentsAmount}
                     image={meme.image}
                 />
             ))}

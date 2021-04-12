@@ -15,15 +15,23 @@ public class MemeDto {
     private final String title;
     private final long uploadDate;
     private final int votes;
+    private int commentsAmount;
     private final List<CommentDto> comments;
 
-    public MemeDto(Meme meme) {
+    public MemeDto(Meme meme, boolean rich) {
         this.id = meme.getId();
         this.image = meme.getImage();
         this.author = meme.getAuthor().getUsername();
         this.title = meme.getTitle();
         this.uploadDate = meme.getUploadDate().getTime();
         this.votes = meme.getVotes();
+        this.commentsAmount = meme.getComments().size();
+
+        if (!rich) {
+            this.comments = null;
+            return;
+        }
+
         this.comments = meme.getComments().stream()
                 .filter(comment -> !comment.isReply())
                 .map(comment -> new CommentDto(meme, comment))

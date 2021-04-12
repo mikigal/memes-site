@@ -57,6 +57,7 @@ export const Profile = () => {
             borderRadius="15px"
             spacing="0"
             padding="15px"
+            marginBottom="20px"
         >
             <UI.Image
                 width="100px"
@@ -86,7 +87,10 @@ export const Profile = () => {
                     paddingRight="10px"
                     paddingBottom="10px"
                 >
-                    <UI.Text fontSize="2xl" fontWeight="bold">
+                    <UI.Text
+                        fontSize={{ base: "xl", lg: "2xl" }}
+                        fontWeight="bold"
+                    >
                         {user.username}
                     </UI.Text>
 
@@ -107,7 +111,10 @@ export const Profile = () => {
 
                 <UI.HStack>
                     <UI.Icon as={BsCardImage} />
-                    <UI.Text paddingLeft="3px">
+                    <UI.Text
+                        fontSize={{ base: "sm", lg: "md" }}
+                        paddingLeft="3px"
+                    >
                         {user.memesAmount +
                             " meme" +
                             (user.memesAmount === 1 ? "" : "s")}
@@ -116,7 +123,10 @@ export const Profile = () => {
 
                 <UI.HStack>
                     <ChatIcon />
-                    <UI.Text paddingLeft="3px">
+                    <UI.Text
+                        fontSize={{ base: "sm", lg: "md" }}
+                        paddingLeft="3px"
+                    >
                         {user.commentsAmount +
                             " comment" +
                             (user.commentsAmount === 1 ? "" : "s")}
@@ -125,7 +135,12 @@ export const Profile = () => {
 
                 <UI.HStack>
                     <CalendarIcon />
-                    <UI.Text paddingLeft="3px">{parsedDate}</UI.Text>
+                    <UI.Text
+                        fontSize={{ base: "sm", lg: "md" }}
+                        paddingLeft="3px"
+                    >
+                        {parsedDate}
+                    </UI.Text>
                 </UI.HStack>
             </UI.VStack>
         </UI.HStack>
@@ -136,7 +151,13 @@ const LoginForm = () => {
     const toast = UI.useToast();
 
     return (
-        <UI.Box width="340px" marginLeft="20px">
+        <UI.Box
+            width="340px"
+            borderRadius="15px"
+            padding="15px"
+            background={Config.BackgroundDarker}
+            marginBottom="20px"
+        >
             <Formik
                 initialValues={{ username: "", password: "" }}
                 validationSchema={Yup.object().shape({
@@ -187,7 +208,7 @@ const LoginForm = () => {
             >
                 {(props) => (
                     <Form>
-                        <UI.VStack align="center">
+                        <UI.VStack align="center" spacing="10px">
                             <TextInput
                                 id="username"
                                 type="text"
@@ -207,7 +228,6 @@ const LoginForm = () => {
                                 type="submit"
                                 variant="outline"
                                 width="150px"
-                                marginTop="5px"
                                 borderColor={Config.Text}
                                 color={Config.Text}
                                 _hover={{
@@ -237,7 +257,7 @@ const TextInput = (props) => {
                     {...field}
                     id={id}
                     type={type}
-                    width="320px"
+                    width="300px"
                     placeholder={placeholder}
                     borderColor={Config.Text}
                     _hover={{ borderColor: Config.Accent }}

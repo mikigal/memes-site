@@ -4,7 +4,7 @@ import * as Config from "../config.json";
 import * as API from "../utils/api";
 import { timeSince, VoteButton } from "../utils/utils";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const CommentsSection = (props) => {
     const { comments } = props;
@@ -29,14 +29,14 @@ export const CommentsSection = (props) => {
                 alignItems="center"
                 spacing="0"
             >
-                <UI.Text fontSize="2xl" fontWeight="bold">
+                <UI.Text fontSize={{ base: "xl", lg: "2xl" }} fontWeight="bold">
                     Comments
                 </UI.Text>
 
                 <UI.Spacer />
 
                 <UI.Text
-                    fontSize="lg"
+                    fontSize={{ base: "md", lg: "lg" }}
                     paddingRight="15px"
                     _hover={{ color: Config.Accent }}
                     transition="color 0.15s ease"
@@ -50,7 +50,7 @@ export const CommentsSection = (props) => {
                 </UI.Text>
 
                 <UI.Text
-                    fontSize="lg"
+                    fontSize={{ base: "md", lg: "lg" }}
                     _hover={{ color: Config.Accent }}
                     transition="color 0.15s ease"
                     color={sortMode === 1 ? Config.Accent : Config.Text}
@@ -74,6 +74,7 @@ export const CommentsSection = (props) => {
                     authorAvatar={comment.authorAvatar}
                     votes={comment.votes}
                     uploadDate={comment.uploadDate}
+                    isReply={false}
                     replies={comment.replies}
                 />
             ))}
@@ -89,22 +90,36 @@ const Comment = (props) => {
         votes,
         content,
         uploadDate,
+        isReply,
         replies,
     } = props;
 
+    const { loading, user } = API.useUser();
     const [currentVotes, setCurrentVotes] = useState(votes);
-    const [currentUserVote, setCurrentUserVote] = useState(userVote);
+    const [currentUserVote, setCurrentUserVote] = useState(-1);
     const vote = API.useVote();
 
-    const { loading, user } = API.useUser();
+    useEffect(() => {
+        if (loading) {
+            return;
+        }
+
+        setCurrentUserVote(
+            user === undefined ? undefined : user.votedComments[id]
+        );
+    }, user);
+
     if (loading) {
         return <UI.Text>Loading...</UI.Text>;
     }
 
-    const userVote = user === undefined ? undefined : user.votedComments[id];
-
     return (
-        <UI.Box width="100%" paddingBottom="15px">
+        <UI.Box
+            width={isReply ? "93%" : "100%"}
+            marginLeft={isReply ? "7%" : "0"}
+            paddingTop={isReply ? "15px" : "0"}
+            paddingBottom={isReply ? "0" : "15px"}
+        >
             <UI.HStack>
                 <UI.Image
                     src={
@@ -115,15 +130,41 @@ const Comment = (props) => {
                               authorAvatar +
                               ".png"
                     }
-                    width="45px"
-                    height="45px"
+                    width={{ base: "35px", lg: "45px" }}
+                    height={{ base: "35px", lg: "45px" }}
                     borderRadius="5px"
                 />
-                <UI.Text color={Config.Accent} fontSize="xl" fontWeight="bold">
+
+                <UI.VStack
+                    spacing="0"
+                    align="start"
+                    display={{ base: "block", lg: "none" }}
+                >
+                    <UI.Text
+                        color={Config.Accent}
+                        fontSize="lg"
+                        fontWeight="bold"
+                        marginBottom="-5px"
+                    >
+                        {author}
+                    </UI.Text>
+                    <UI.Text fontSize="sm">
+                        {timeSince(new Date(parseInt(uploadDate)))}
+                    </UI.Text>
+                </UI.VStack>
+
+                <UI.Text
+                    color={Config.Accent}
+                    fontSize="xl"
+                    fontWeight="bold"
+                    display={{ base: "none", lg: "block" }}
+                >
                     {author}
                 </UI.Text>
 
-                <UI.Text>{timeSince(new Date(parseInt(uploadDate)))}</UI.Text>
+                <UI.Text fontSize="md" display={{ base: "none", lg: "block" }}>
+                    {timeSince(new Date(parseInt(uploadDate)))}
+                </UI.Text>
 
                 <UI.Spacer />
                 <VoteButton
@@ -147,7 +188,7 @@ const Comment = (props) => {
                     }}
                 />
 
-                <UI.Text fontSize="xl" fontWeight="bold">
+                <UI.Text fontSize={{ base: "lg", lg: "xl" }} fontWeight="bold">
                     {currentVotes}
                 </UI.Text>
 
@@ -173,12 +214,12 @@ const Comment = (props) => {
                 />
             </UI.HStack>
 
-            <UI.Text fontSize="md" paddingTop="7px">
+            <UI.Text fontSize={{ base: "sm", lg: "lg" }} paddingTop="7px">
                 {content}
             </UI.Text>
 
             {replies.map((reply) => (
-                <Reply
+                <Comment
                     key={reply.id}
                     id={reply.id}
                     content={reply.content}
@@ -186,105 +227,10 @@ const Comment = (props) => {
                     authorAvatar={reply.authorAvatar}
                     votes={reply.votes}
                     uploadDate={reply.uploadDate}
-                    userVote={
-                        user === undefined
-                            ? undefined
-                            : user.votedComments[reply.id]
-                    }
+                    isReply={true}
+                    replies={[]}
                 />
             ))}
-        </UI.Box>
-    );
-};
-
-const Reply = (props) => {
-    const {
-        id,
-        author,
-        authorAvatar,
-        votes,
-        content,
-        uploadDate,
-        userVote,
-    } = props;
-
-    const vote = API.useVote();
-    const [currentVotes, setCurrentVotes] = useState(votes);
-    const [currentUserVote, setCurrentUserVote] = useState(userVote);
-
-    return (
-        <UI.Box marginLeft="7%" width="93%" paddingTop="15px">
-            <UI.HStack>
-                <UI.Image
-                    src={
-                        authorAvatar === null
-                            ? "/unknown.png"
-                            : Config.restAddress +
-                              "/uploads/users/" +
-                              authorAvatar +
-                              ".png"
-                    }
-                    width="45px"
-                    height="45px"
-                    borderRadius="5px"
-                />
-                <UI.Text color={Config.Accent} fontSize="xl" fontWeight="bold">
-                    {author}
-                </UI.Text>
-
-                <UI.Text>{timeSince(new Date(parseInt(uploadDate)))}</UI.Text>
-
-                <UI.Spacer />
-
-                <VoteButton
-                    plus="true"
-                    size="27px"
-                    voted={currentUserVote}
-                    onClick={async () => {
-                        const response = await vote(id, false, true);
-
-                        if (response === undefined) {
-                            return;
-                        }
-
-                        let { newVotes, newState } = response;
-                        setCurrentVotes(newVotes);
-                        if (newState === -1) {
-                            setCurrentUserVote(undefined);
-                        } else {
-                            setCurrentUserVote(newState === 1);
-                        }
-                    }}
-                />
-                <UI.Text fontSize="xl" fontWeight="bold">
-                    {currentVotes}
-                </UI.Text>
-
-                <VoteButton
-                    plus="false"
-                    size="27px"
-                    voted={currentUserVote}
-                    onClick={async () => {
-                        const response = await vote(id, false, false);
-
-                        if (response === undefined) {
-                            return;
-                        }
-
-                        let { newVotes, newState } = response;
-                        setCurrentVotes(newVotes);
-                        if (newState === -1) {
-                            setCurrentUserVote(undefined);
-                        } else {
-                            setCurrentUserVote(newState === 1);
-                        }
-                    }}
-                />
-            </UI.HStack>
-
-            <UI.Text fontSize="md" paddingTop="7px">
-                {content}
-            </UI.Text>
         </UI.Box>
     );
 };

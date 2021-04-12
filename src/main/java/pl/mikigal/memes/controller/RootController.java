@@ -15,6 +15,7 @@ import pl.mikigal.memes.data.meme.MemeRepository;
 import pl.mikigal.memes.data.user.User;
 import pl.mikigal.memes.data.user.UserRepository;
 
+import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -40,7 +41,7 @@ public class RootController {
 
         return memeRepository.findWithOffset(10, page * 10)
                 .stream()
-                .map(MemeDto::new)
+                .map(meme -> new MemeDto(meme, false))
                 .collect(Collectors.toList());
     }
 
@@ -51,14 +52,14 @@ public class RootController {
             return ResponseEntity.status(404).body(null);
         }
 
-        return new MemeDto(meme.get());
+        return new MemeDto(meme.get(), true);
     }
 
-    @GetMapping("/most_popular")
-    public Object mostPopular() {
-        return memeRepository.findMostPopular(10)
+    @GetMapping("/recommendations")
+    public Object recommendations() {
+        return memeRepository.findMostPopularSince(new Date(System.currentTimeMillis() - 7 * 24 * 3600 * 1000))
                 .stream()
-                .map(MemeDto::new)
+                .map(meme -> new MemeDto(meme, false))
                 .collect(Collectors.toList());
     }
 
