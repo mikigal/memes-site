@@ -17,10 +17,6 @@ export default function Index() {
         fetcher
     );
 
-    if (loading) {
-        return <UI.Text>Loading...</UI.Text>;
-    }
-
     if (error) {
         return (
             <ErrorAlert

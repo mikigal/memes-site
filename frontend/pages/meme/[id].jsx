@@ -14,10 +14,6 @@ export default function MemeView() {
 
     const { data, error } = useSWR(Config.restAddress + "/meme/" + id, fetcher);
 
-    if (loading) {
-        return <UI.Text>Loading...</UI.Text>;
-    }
-
     if (error) {
         return (
             <ErrorAlert
