@@ -16,6 +16,7 @@ import pl.mikigal.memes.data.user.User;
 import pl.mikigal.memes.data.user.UserRepository;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RestController
@@ -106,11 +107,11 @@ public class RootController {
     @GetMapping("/temp")
     public Object temp() {
         User mikigal = this.userRepository.save(new User("mikigal", new BCryptPasswordEncoder().encode("zaq1@WSX"), "mikigal.priv@gmail.com"));
-        User socket = this.userRepository.save(new User("SocketByte", new BCryptPasswordEncoder().encode("zaq1@WSX"), "mikigal.priv@gmail.com"));
+        User socket = this.userRepository.save(new User("SocketByte", new BCryptPasswordEncoder().encode("zaq1@WSX"), "a01@mikigal.pl"));
 
-        Meme first = this.memeRepository.save(new Meme(mikigal, "First meme", "d73e1522-452b-40ef-bd3f-6dd5dd3749b8.png"));
-        Meme second = this.memeRepository.save(new Meme(mikigal, "Second meme", "54a33173-4954-4697-9857-dd15f53323e6.png"));
-        Meme third = this.memeRepository.save( new Meme(socket, "Third meme", "fb2f9e61-ef9f-40eb-95bc-c8da39f9c82b.png"));
+        Meme first = this.memeRepository.save(new Meme(mikigal, "First meme", UUID.fromString("d73e1522-452b-40ef-bd3f-6dd5dd3749b8")));
+        Meme second = this.memeRepository.save(new Meme(mikigal, "Second meme", UUID.fromString("54a33173-4954-4697-9857-dd15f53323e6")));
+        Meme third = this.memeRepository.save( new Meme(socket, "Third meme", UUID.fromString("fb2f9e61-ef9f-40eb-95bc-c8da39f9c82b")));
 
         Comment firstComment = this.commentRepository.save(
                 new Comment(socket, third, "Therefore, database queries may be performed during view rendering. Explicitly configure", null));

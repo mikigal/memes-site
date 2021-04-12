@@ -5,14 +5,16 @@ import pl.mikigal.memes.data.comment.Comment;
 import pl.mikigal.memes.data.meme.Meme;
 import pl.mikigal.memes.data.user.User;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Getter
 public class UserDto {
     private final int id;
     private final String username;
-    private final String avatar;
+    private final Date registerDate;
+    private final UUID avatar;
+    private final int memesAmount;
+    private final int commentsAmount;
 
     private final Map<Integer, Boolean> votedMemes;
     private final Map<Integer, Boolean> votedComments;
@@ -20,7 +22,11 @@ public class UserDto {
     public UserDto(User user) {
         this.id = user.getId();
         this.username = user.getUsername();
+        this.registerDate = user.getRegisterDate();
         this.avatar = user.getAvatar();
+        this.memesAmount = user.getMemes().size();
+        this.commentsAmount = user.getComments().size();
+
         this.votedMemes = new HashMap<>();
         this.votedComments = new HashMap<>();
 

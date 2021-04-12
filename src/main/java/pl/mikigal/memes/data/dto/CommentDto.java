@@ -6,13 +6,14 @@ import pl.mikigal.memes.data.meme.Meme;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Getter
 public class CommentDto {
     private final int id;
     private final String author;
-    private final String authorAvatar;
+    private final UUID authorAvatar;
     private final int votes;
     private final String content;
     private final long uploadDate;

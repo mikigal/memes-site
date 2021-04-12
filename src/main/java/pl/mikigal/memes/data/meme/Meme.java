@@ -20,7 +20,7 @@ public class Meme {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    private String image;
+    private UUID image;
 
     @ManyToOne
     private User author;
@@ -46,7 +46,7 @@ public class Meme {
     )
     private Set<User> votedMinusUsers;
 
-    public Meme(User author, String title, String image) {
+    public Meme(User author, String title, UUID image) {
         this.image = image;
         this.author = author;
         this.title = title;

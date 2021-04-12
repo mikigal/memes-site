@@ -67,7 +67,9 @@ export const Meme = (props) => {
 
             <Link href={"/meme/" + id} marginTop="10px" paddingBottom="10px">
                 <UI.Image
-                    src={Config.restAddress + "/uploads/memes/" + image}
+                    src={
+                        Config.restAddress + "/uploads/memes/" + image + ".png"
+                    }
                     width="100%"
                     height="auto"
                     borderRadius="15px"

@@ -5,18 +5,44 @@ import * as Config from "../config.json";
 import * as API from "../utils/api";
 
 import { Formik, Form, useField } from "formik";
-import { BiLogOut } from "react-icons/bi";
 import { useRouter } from "next/router";
+import { useState, useEffect } from "react";
+
+import { BiLogOut } from "react-icons/bi";
+import { BsCardImage } from "react-icons/bs";
+import { ChatIcon, CalendarIcon } from "@chakra-ui/icons";
 
 export const Profile = () => {
     const toast = UI.useToast();
     const router = useRouter();
+    const [parsedDate, setParsedDate] = useState();
     const { loading, user } = API.useUser();
 
+    useEffect(() => {
+        if (loading || user === undefined) {
+            return;
+        }
+
+        let registerDate = new Date(user.registerDate);
+        let day = registerDate.getDate();
+        let month = registerDate.getMonth() + 1;
+
+        if (day < 10) {
+            day = "0" + day;
+        }
+        if (month < 10) {
+            month = "0" + month;
+        }
+
+        setParsedDate(day + "." + month + "." + registerDate.getFullYear());
+    }, user);
+
     if (loading) {
-        <UI.Flex justifyContent="center">
-            <UI.Text fontSize="20px">Loading...</UI.Text>
-        </UI.Flex>;
+        return (
+            <UI.Flex justifyContent="center">
+                <UI.Text fontSize="20px">Loading...</UI.Text>
+            </UI.Flex>
+        );
     }
 
     if (user === undefined) {
@@ -27,45 +53,81 @@ export const Profile = () => {
         <UI.HStack
             alignItems="start"
             backgroundColor={Config.BackgroundDarker}
-            width="320px"
+            width="340px"
             borderRadius="15px"
             spacing="0"
-            paddingTop="15px"
-            paddingBottom="15px"
+            padding="15px"
         >
             <UI.Image
                 width="100px"
                 height="100px"
                 borderRadius="15px"
-                src={Config.restAddress + "/uploads/users/" + user.avatar}
+                marginRight="15px"
+                src={
+                    user.avatar === null
+                        ? "/unknown.png"
+                        : Config.restAddress +
+                          "/uploads/users/" +
+                          user.avatar +
+                          ".png"
+                }
             />
 
-            <UI.HStack
-                paddingTop="25px"
-                height="20px"
-                alignItems="center"
+            <UI.VStack
                 width="100%"
-                spacing="0"
-                paddingRight="20px"
+                justifyContent="start"
+                alignItems="start"
+                spacing="3px"
             >
-                <UI.Text fontSize="2xl" fontWeight="bold">
-                    {user.username}
-                </UI.Text>
+                <UI.HStack
+                    width="100%"
+                    height="20px"
+                    spacing="0"
+                    paddingRight="10px"
+                    paddingBottom="10px"
+                >
+                    <UI.Text fontSize="2xl" fontWeight="bold">
+                        {user.username}
+                    </UI.Text>
 
-                <UI.Spacer />
+                    <UI.Spacer />
 
-                <UI.Icon
-                    fontSize="2xl"
-                    as={BiLogOut}
-                    transition="color 0.15s ease"
-                    _hover={{ color: Config.Accent }}
-                    onClick={async () => {
-                        await API.logout();
-                        API.refreshSessionState();
-                        location.reload(false);
-                    }}
-                />
-            </UI.HStack>
+                    <UI.Icon
+                        fontSize="2xl"
+                        as={BiLogOut}
+                        transition="color 0.15s ease"
+                        _hover={{ color: Config.Accent }}
+                        onClick={async () => {
+                            await API.logout();
+                            API.refreshSessionState();
+                            location.reload(false);
+                        }}
+                    />
+                </UI.HStack>
+
+                <UI.HStack>
+                    <UI.Icon as={BsCardImage} />
+                    <UI.Text paddingLeft="3px">
+                        {user.memesAmount +
+                            " meme" +
+                            (user.memesAmount === 1 ? "" : "s")}
+                    </UI.Text>
+                </UI.HStack>
+
+                <UI.HStack>
+                    <ChatIcon />
+                    <UI.Text paddingLeft="3px">
+                        {user.commentsAmount +
+                            " comment" +
+                            (user.commentsAmount === 1 ? "" : "s")}
+                    </UI.Text>
+                </UI.HStack>
+
+                <UI.HStack>
+                    <CalendarIcon />
+                    <UI.Text paddingLeft="3px">{parsedDate}</UI.Text>
+                </UI.HStack>
+            </UI.VStack>
         </UI.HStack>
     );
 };
@@ -74,7 +136,7 @@ const LoginForm = () => {
     const toast = UI.useToast();
 
     return (
-        <UI.Box width="320px" marginLeft="20px">
+        <UI.Box width="340px" marginLeft="20px">
             <Formik
                 initialValues={{ username: "", password: "" }}
                 validationSchema={Yup.object().shape({

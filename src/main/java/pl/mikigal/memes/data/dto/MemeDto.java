@@ -4,12 +4,13 @@ import lombok.Getter;
 import pl.mikigal.memes.data.meme.Meme;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Getter
 public class MemeDto {
     private final int id;
-    private final String image;
+    private final UUID image;
     private final String author;
     private final String title;
     private final long uploadDate;

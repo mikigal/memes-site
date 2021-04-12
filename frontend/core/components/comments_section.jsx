@@ -107,7 +107,14 @@ const Comment = (props) => {
         <UI.Box width="100%" paddingBottom="15px">
             <UI.HStack>
                 <UI.Image
-                    src={Config.restAddress + "/uploads/users/" + authorAvatar}
+                    src={
+                        authorAvatar === null
+                            ? "/unknown.png"
+                            : Config.restAddress +
+                              "/uploads/users/" +
+                              authorAvatar +
+                              ".png"
+                    }
                     width="45px"
                     height="45px"
                     borderRadius="5px"
@@ -209,7 +216,14 @@ const Reply = (props) => {
         <UI.Box marginLeft="7%" width="93%" paddingTop="15px">
             <UI.HStack>
                 <UI.Image
-                    src={Config.restAddress + "/uploads/users/" + authorAvatar}
+                    src={
+                        authorAvatar === null
+                            ? "/unknown.png"
+                            : Config.restAddress +
+                              "/uploads/users/" +
+                              authorAvatar +
+                              ".png"
+                    }
                     width="45px"
                     height="45px"
                     borderRadius="5px"

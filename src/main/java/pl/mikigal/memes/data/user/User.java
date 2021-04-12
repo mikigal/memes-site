@@ -2,16 +2,15 @@ package pl.mikigal.memes.data.user;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import pl.mikigal.memes.data.comment.Comment;
 import pl.mikigal.memes.data.meme.Meme;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @Entity
 @Table(name = "users")
@@ -25,8 +24,9 @@ public class User {
     private String username;
     private String password;
     private String mail;
+    private Date registerDate;
 
-    private String avatar;
+    private UUID avatar;
 
     @OneToMany(mappedBy = "author")
     private Set<Meme> memes;
@@ -50,6 +50,7 @@ public class User {
         this.username = username;
         this.password = password;
         this.mail = mail;
+        this.registerDate = new Date();
         this.memes = new HashSet<>();
     }
 
