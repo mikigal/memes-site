@@ -1,18 +1,21 @@
 import * as UI from "@chakra-ui/react";
-
 import * as Config from "../config.json";
 import * as API from "../utils/api";
-import { timeSince, VoteButton } from "../utils/utils";
 
+import { CommentForm } from "./comments_form";
+import { timeSince, VoteButton, fetcher } from "../utils/utils";
+import { BsReply } from "react-icons/bs";
 import { useEffect, useState } from "react";
 
 export const CommentsSection = (props) => {
-    const { comments } = props;
+    const { memeId, comments } = props;
 
-    const [sortedComments, setSortedComments] = useState(
-        comments.sort(compareByTime).slice()
-    );
+    const [sortedComments, setSortedComments] = useState([]);
     const [sortMode, setSortMode] = useState(0);
+
+    useEffect(() => {
+        setSortedComments(comments.slice().sort(compareByTime));
+    }, [comments]);
 
     return (
         <UI.VStack
@@ -65,9 +68,12 @@ export const CommentsSection = (props) => {
                 </UI.Text>
             </UI.HStack>
 
+            <CommentForm memeId={memeId} replyTo="-1" />
+
             {sortedComments.map((comment) => (
                 <Comment
                     key={comment.id}
+                    memeId={memeId}
                     id={comment.id}
                     content={comment.content}
                     author={comment.author}
@@ -76,6 +82,7 @@ export const CommentsSection = (props) => {
                     uploadDate={comment.uploadDate}
                     isReply={false}
                     replies={comment.replies}
+                    replyToId={comment.id}
                 />
             ))}
         </UI.VStack>
@@ -84,6 +91,7 @@ export const CommentsSection = (props) => {
 
 const Comment = (props) => {
     const {
+        memeId,
         id,
         author,
         authorAvatar,
@@ -92,11 +100,15 @@ const Comment = (props) => {
         uploadDate,
         isReply,
         replies,
+        replyToId,
+        replyToAuthor,
     } = props;
 
     const { loading, user } = API.useUser();
     const [currentVotes, setCurrentVotes] = useState(votes);
     const [currentUserVote, setCurrentUserVote] = useState(-1);
+    const [sortedReplies, setSortedReplies] = useState([]);
+    const [showReplyForm, setShowReplyForm] = useState(false);
     const vote = API.useVote();
 
     useEffect(() => {
@@ -107,7 +119,11 @@ const Comment = (props) => {
         setCurrentUserVote(
             user === undefined ? undefined : user.votedComments[id]
         );
-    }, user);
+    }, [user]);
+
+    useEffect(() => {
+        setSortedReplies(replies.slice().sort(compareByTimeComments));
+    }, [replies]);
 
     if (loading) {
         return <UI.Text>Loading...</UI.Text>;
@@ -214,13 +230,31 @@ const Comment = (props) => {
                 />
             </UI.HStack>
 
-            <UI.Text fontSize={{ base: "sm", lg: "lg" }} paddingTop="7px">
+            <UI.Text fontSize={{ base: "sm", lg: "md" }} paddingTop="7px">
                 {content}
             </UI.Text>
 
-            {replies.map((reply) => (
+            <UI.HStack
+                spacing="3px"
+                _hover={{ color: Config.Accent }}
+                transition="color 0.15s ease"
+                onClick={() => setShowReplyForm(!showReplyForm)}
+            >
+                <UI.Icon as={BsReply} /> <UI.Text fontSize="sm">Reply</UI.Text>
+            </UI.HStack>
+
+            {showReplyForm && user !== undefined && (
+                <CommentForm
+                    memeId={memeId}
+                    replyTo={replyToId}
+                    replyToAuthor={isReply ? replyToAuthor : author}
+                />
+            )}
+
+            {sortedReplies.map((reply) => (
                 <Comment
                     key={reply.id}
+                    memeId={memeId}
                     id={reply.id}
                     content={reply.content}
                     author={reply.author}
@@ -229,10 +263,24 @@ const Comment = (props) => {
                     uploadDate={reply.uploadDate}
                     isReply={true}
                     replies={[]}
+                    replyToId={id}
+                    replyToAuthor={reply.author}
                 />
             ))}
         </UI.Box>
     );
+};
+
+const compareByTimeComments = (comment1, comment2) => {
+    if (comment1.uploadDate < comment2.uploadDate) {
+        return -1;
+    }
+
+    if (comment1.uploadDate > comment2.uploadDate) {
+        return 1;
+    }
+
+    return 0;
 };
 
 const compareByTime = (meme1, meme2) => {

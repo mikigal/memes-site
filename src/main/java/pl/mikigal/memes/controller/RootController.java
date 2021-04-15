@@ -1,20 +1,19 @@
 package pl.mikigal.memes.controller;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import pl.mikigal.memes.data.comment.Comment;
 import pl.mikigal.memes.data.comment.CommentRepository;
-import pl.mikigal.memes.data.dto.MemeDto;
-import pl.mikigal.memes.data.dto.UserDto;
-import pl.mikigal.memes.data.dto.VoteDto;
-import pl.mikigal.memes.data.dto.VoteResponseDto;
+import pl.mikigal.memes.data.dto.*;
 import pl.mikigal.memes.data.meme.Meme;
 import pl.mikigal.memes.data.meme.MemeRepository;
 import pl.mikigal.memes.data.user.User;
 import pl.mikigal.memes.data.user.UserRepository;
 
+import javax.validation.Valid;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
@@ -36,7 +35,7 @@ public class RootController {
     @GetMapping("/memes")
     public Object memes(@RequestParam int page) {
         if (page < 0) {
-            return ResponseEntity.badRequest().body(null);
+            return ResponseEntity.badRequest().body(new RestResponse(false, "invalid page id"));
         }
 
         return memeRepository.findWithOffset(10, page * 10)
@@ -49,7 +48,7 @@ public class RootController {
     public Object meme(@PathVariable int id) {
         Optional<Meme> meme = this.memeRepository.findById(id);
         if (!meme.isPresent()) {
-            return ResponseEntity.status(404).body(null);
+            return ResponseEntity.status(404).body(new RestResponse(false, "invalid meme id"));
         }
 
         return new MemeDto(meme.get(), true);
@@ -67,13 +66,13 @@ public class RootController {
     public Object voteMeme(@RequestBody VoteDto vote, Authentication authentication) {
         User user = this.userRepository.findByUsernameOrMail(authentication.getName(), authentication.getName());
         if (user == null) {
-            return ResponseEntity.badRequest().body("invalid user");
+            return ResponseEntity.badRequest().body(new RestResponse(false, "invalid user"));
         }
 
         if (vote.isMeme()) {
             Optional<Meme> optional = this.memeRepository.findById(vote.getId());
             if (!optional.isPresent()) {
-                return ResponseEntity.badRequest().body("invalid id");
+                return ResponseEntity.badRequest().body(new RestResponse(false, "invalid meme id"));
             }
 
             Meme meme = optional.get();
@@ -85,7 +84,7 @@ public class RootController {
 
         Optional<Comment> optional = this.commentRepository.findById(vote.getId());
         if (!optional.isPresent()) {
-            return ResponseEntity.badRequest().body("invalid id");
+            return ResponseEntity.badRequest().body(new RestResponse(false, "invalid comment id"));
         }
 
         Comment comment = optional.get();
@@ -99,16 +98,55 @@ public class RootController {
     public Object user(Authentication authentication) {
         User user = this.userRepository.findByUsernameOrMail(authentication.getName(), authentication.getName());
         if (user == null) {
-            return ResponseEntity.badRequest().body("invalid user");
+            return ResponseEntity.badRequest().body(new RestResponse(false, "invalid user"));
         }
 
         return new UserDto(user);
     }
 
+    @PostMapping(value = "/comment")
+    public ResponseEntity<?> comment(@Valid @RequestBody CommentFormDto commentForm, Authentication authentication) {
+        User user = this.userRepository.findByUsernameOrMail(authentication.getName(), authentication.getName());
+        if (user == null) {
+            return ResponseEntity.badRequest().body(new RestResponse(false, "invalid user"));
+        }
+
+        Optional<Meme> memeOptional = this.memeRepository.findById(commentForm.getMemeId());
+        if (!memeOptional.isPresent()) {
+            return ResponseEntity.badRequest().body(new RestResponse(false, "invalid meme id"));
+        }
+
+        Meme meme = memeOptional.get();
+        boolean isReply = commentForm.getReplyTo() != -1;
+
+        if (!isReply) {
+            this.commentRepository.save(new Comment(user, meme, commentForm.getContent(), null));
+            return ResponseEntity.ok().body(new RestResponse(true, "success"));
+        }
+
+        Optional<Comment> replyToOptional = this.commentRepository.findById(commentForm.getReplyTo());
+        if (!replyToOptional.isPresent()) {
+            return ResponseEntity.badRequest().body(new RestResponse(false, "invalid replyTo id"));
+        }
+
+        Comment replyTo = replyToOptional.get();
+        if (replyTo.isReply()) {
+            return ResponseEntity.badRequest().body(new RestResponse(false, "cant reply to another reply"));
+        }
+
+        this.commentRepository.save(new Comment(user, meme, commentForm.getContent(), replyTo));
+        return ResponseEntity.ok().body(new RestResponse(true, "success"));
+    }
+
     @GetMapping("/temp")
     public Object temp() {
-        User mikigal = this.userRepository.save(new User("mikigal", new BCryptPasswordEncoder().encode("zaq1@WSX"), "mikigal.priv@gmail.com"));
-        User socket = this.userRepository.save(new User("SocketByte", new BCryptPasswordEncoder().encode("zaq1@WSX"), "a01@mikigal.pl"));
+        User mikigal = new User("mikigal", new BCryptPasswordEncoder().encode("zaq1@WSX"), "mikigal.priv@gmail.com");
+        mikigal.setAvatar(UUID.fromString("7064addd-ccde-4222-ac29-68e7332baf6d"));
+        mikigal = this.userRepository.save(mikigal);
+
+        User socket = new User("SocketByte", new BCryptPasswordEncoder().encode("zaq1@WSX"), "a01@mikigal.pl");
+        socket.setAvatar(UUID.fromString("c1e5f057-17d1-4e50-a5e6-3d78e3a4e3f8"));
+        socket = this.userRepository.save(socket);
 
         Meme first = this.memeRepository.save(new Meme(mikigal, "First meme", UUID.fromString("d73e1522-452b-40ef-bd3f-6dd5dd3749b8")));
         Meme second = this.memeRepository.save(new Meme(mikigal, "Second meme", UUID.fromString("54a33173-4954-4697-9857-dd15f53323e6")));

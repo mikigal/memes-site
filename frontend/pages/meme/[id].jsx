@@ -10,7 +10,7 @@ import useSWR from "swr";
 
 export default function MemeView() {
     const router = useRouter();
-    const { id } = router.query;
+    const id = router.query.id === undefined ? 1 : router.query.id;
 
     const { data, error } = useSWR(Config.restAddress + "/meme/" + id, fetcher);
 
@@ -43,7 +43,7 @@ export default function MemeView() {
                 image={data.image}
             />
 
-            <CommentsSection comments={data.comments} />
+            <CommentsSection memeId={data.id} comments={data.comments} />
         </>
     );
 }

@@ -39,12 +39,12 @@ export const Navbar = () => {
                     <BellIcon fontSize={{ base: "25px", lg: "30px" }} />
 
                     <UI.Box
-                        width="8px"
-                        height="8px"
+                        width={{ base: "8px", lg: "9px" }}
+                        height={{ base: "8px", lg: "9px" }}
                         position="fixed"
                         zIndex="11"
-                        marginTop="-21px"
-                        marginLeft="13px"
+                        marginTop={{ base: "-21px", lg: "-26px" }}
+                        marginLeft={{ base: "13px", lg: "17px" }}
                         borderRadius="360"
                         backgroundColor="red"
                     ></UI.Box>

@@ -35,7 +35,7 @@ export const Profile = () => {
         }
 
         setParsedDate(day + "." + month + "." + registerDate.getFullYear());
-    }, user);
+    }, [user]);
 
     if (loading) {
         return (
