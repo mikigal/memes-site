@@ -1,10 +1,10 @@
 package pl.mikigal.memes.controller;
 
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import pl.mikigal.memes.data.comment.Comment;
 import pl.mikigal.memes.data.comment.CommentRepository;
 import pl.mikigal.memes.data.dto.*;
@@ -12,8 +12,11 @@ import pl.mikigal.memes.data.meme.Meme;
 import pl.mikigal.memes.data.meme.MemeRepository;
 import pl.mikigal.memes.data.user.User;
 import pl.mikigal.memes.data.user.UserRepository;
+import pl.mikigal.memes.service.StorageService;
+import pl.mikigal.memes.service.UploadType;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
@@ -25,11 +28,16 @@ public class RootController {
     private final UserRepository userRepository;
     private final MemeRepository memeRepository;
     private final CommentRepository commentRepository;
+    private final StorageService storageService;
 
-    public RootController(MemeRepository memeRepository, UserRepository userRepository, CommentRepository commentRepository) {
+    public RootController(MemeRepository memeRepository,
+                          UserRepository userRepository,
+                          CommentRepository commentRepository,
+                          StorageService storageService) {
         this.memeRepository = memeRepository;
         this.userRepository = userRepository;
         this.commentRepository = commentRepository;
+        this.storageService = storageService;
     }
 
     @GetMapping("/memes")
@@ -102,6 +110,28 @@ public class RootController {
         }
 
         return new UserDto(user);
+    }
+
+    @PostMapping("/upload_meme")
+    public Object upload(@RequestParam("file") MultipartFile file, @RequestParam("title") String title, Authentication authentication) {
+        User user = this.userRepository.findByUsernameOrMail(authentication.getName(), authentication.getName());
+        if (user == null) {
+            return ResponseEntity.badRequest().body(new RestResponse(false, "invalid user"));
+        }
+
+        if (title.length() > 32) {
+            return ResponseEntity.badRequest().body(new RestResponse(false, "title too long"));
+        }
+
+        try {
+            UUID image = this.storageService.store(UploadType.MEME, file.getBytes());
+            this.memeRepository.save(new Meme(user, title, image));
+            return new RestResponse(true, "success");
+        } catch (IOException | IllegalStateException e) {
+            return ResponseEntity.status(500).body(new RestResponse(false, "an error occurred while processing image"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(new RestResponse(false, e.getMessage()));
+        }
     }
 
     @PostMapping(value = "/comment")

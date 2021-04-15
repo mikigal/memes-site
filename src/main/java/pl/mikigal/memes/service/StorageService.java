@@ -3,6 +3,8 @@ package pl.mikigal.memes.service;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -42,7 +44,8 @@ public class StorageService {
      * @param uploadType type of upload, it can be meme or user's avatar
      * @param bytes image data
      * @return UUID of uploaded image
-     * @throws RuntimeException if imagemagick fail while compressing image
+     * @throws IllegalStateException if imagemagick fail while compressing image
+     * @throws RuntimeException if something is wrong with given image
      */
     public UUID store(UploadType uploadType, byte[] bytes) {
         UUID uuid = UUID.randomUUID();
@@ -57,36 +60,45 @@ public class StorageService {
             originalWriter.flush();
             originalWriter.close();
 
-            if (!this.compress(original, compressed)) {
+            if (!this.compress(uploadType, original, compressed)) {
                 original.delete();
                 compressed.delete();
-                throw new RuntimeException("imagemagick didn't finished compressing in 10 seconds");
+                throw new IllegalStateException("imagemagick didn't finished compressing in 10 seconds");
             }
 
             original.delete();
+
+            BufferedImage image = ImageIO.read(compressed);
+            if ((uploadType == UploadType.MEME && (image.getHeight() > 2000 || image.getHeight() < 200)) ||
+                    (uploadType == UploadType.USER && image.getHeight() != 100)) {
+                compressed.delete();
+                throw new RuntimeException("invalid image size");
+            }
+
             return uuid;
         } catch (IOException | InterruptedException e) {
             original.delete();
             compressed.delete();
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
     /**
      * Compress given image with ImageMagick
+     * @param uploadType of uploaded file
      * @param original image which you want to compress
      * @param output path where compressed image should be saved
      * @return true on success, else false
      * @throws IOException if ImageMagic has non-zero exit code
      * @throws InterruptedException if the current thread is interrupted while waiting for exiting process
      */
-    private boolean compress(File original, File output) throws IOException, InterruptedException {
+    private boolean compress(UploadType uploadType, File original, File output) throws IOException, InterruptedException {
         return new ProcessBuilder()
                 .command(
                         this.imagemagickPath,
                         original.toPath().toAbsolutePath().toString(),
 
-                        "-geometry", "700x",
+                        "-geometry", (uploadType == UploadType.MEME ? "700x" : "100x"),
                         "-depth", "8",
                         "-quality",  "97%",
                         "-filter", "Lanczos",
