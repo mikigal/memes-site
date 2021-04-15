@@ -51,6 +51,35 @@ export const useUser = () => {
     };
 };
 
+export const uploadMeme = async (file, title) => {
+    console.log(file);
+    if (unauthorized) {
+        return "Unauthorized";
+    }
+
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("file", file);
+
+    const response = await fetch(Config.restAddress + "/upload_meme", {
+        method: "POST",
+        mode: "cors",
+        credentials: "include",
+        body: formData,
+    });
+
+    if (response.status === 401 || response.status === 403) {
+        return "Unauthorized";
+    }
+
+    const json = await response.json();
+    if (json.success === true) {
+        return null;
+    }
+
+    return json.message;
+};
+
 let unauthorized = false;
 export const sendAuthorizedRequest = async (
     endpoint,

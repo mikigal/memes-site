@@ -119,16 +119,20 @@ public class RootController {
             return ResponseEntity.badRequest().body(new RestResponse(false, "invalid user"));
         }
 
+        if (title.trim().length() < 3) {
+            return ResponseEntity.badRequest().body(new RestResponse(false, "Title is too short"));
+        }
+
         if (title.length() > 32) {
-            return ResponseEntity.badRequest().body(new RestResponse(false, "title too long"));
+            return ResponseEntity.badRequest().body(new RestResponse(false, "Title is too long"));
         }
 
         try {
             UUID image = this.storageService.store(UploadType.MEME, file.getBytes());
-            this.memeRepository.save(new Meme(user, title, image));
+            this.memeRepository.save(new Meme(user, title.trim(), image));
             return new RestResponse(true, "success");
         } catch (IOException | IllegalStateException e) {
-            return ResponseEntity.status(500).body(new RestResponse(false, "an error occurred while processing image"));
+            return ResponseEntity.status(500).body(new RestResponse(false, "An error occurred while processing image"));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(new RestResponse(false, e.getMessage()));
         }

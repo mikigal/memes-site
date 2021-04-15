@@ -1,8 +1,9 @@
 import * as UI from "@chakra-ui/react";
-
 import * as API from "../core/utils/api";
 import * as Config from "../core/config.json";
+
 import { fetcher, ErrorAlert } from "../core/utils/utils";
+import { MemeUploader } from "../core/components/meme_uploader";
 import { Meme } from "../core/components/meme_preview";
 
 import { useRouter } from "next/router";
@@ -36,6 +37,7 @@ export default function Index() {
 
     return (
         <>
+            <MemeUploader currentPage={page} />
             {data.map((meme) => (
                 <Meme
                     key={meme.id}
