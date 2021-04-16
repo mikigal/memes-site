@@ -31,135 +31,126 @@ export const Meme = (props) => {
     const userVote = user === undefined ? undefined : user.votedMemes[id];
 
     return (
-        <Link href={"/meme/" + id}>
-            <UI.VStack
-                backgroundColor={Config.BackgroundDarker}
+        <UI.VStack
+            backgroundColor={Config.BackgroundDarker}
+            width="100%"
+            borderRadius="15px"
+            marginBottom="20px"
+            paddingLeft="15px"
+            paddingRight="15px"
+            spacing={0}
+        >
+            <UI.HStack
+                alignItems="center"
                 width="100%"
-                borderRadius="15px"
-                marginBottom="20px"
-                paddingLeft="15px"
-                paddingRight="15px"
+                height="55px"
                 spacing={0}
             >
-                <UI.HStack
-                    alignItems="center"
-                    width="100%"
-                    height="55px"
-                    spacing={0}
-                >
-                    <UI.Heading size="lg" fontWeight="bold" paddingLeft="10px">
-                        <Link href={"/meme/" + id}>{title}</Link>
-                    </UI.Heading>
+                <UI.Heading size="lg" fontWeight="bold" paddingLeft="10px">
+                    <Link href={"/meme/" + id}>{title}</Link>
+                </UI.Heading>
 
-                    <UI.Spacer />
+                <UI.Spacer />
 
-                    <Link href={"/meme/" + id}>
-                        <a>
-                            <UI.HStack>
-                                <ChatIcon fontSize="lg" fontWeight="bold" />
-                                <UI.Text
-                                    fontSize={{ base: "md", lg: "lg" }}
-                                    fontWeight="bold"
-                                >
-                                    {commentsAmount}
-                                </UI.Text>
-                            </UI.HStack>
-                        </a>
-                    </Link>
-                </UI.HStack>
-
-                <Link
-                    href={"/meme/" + id}
-                    marginTop="10px"
-                    paddingBottom="10px"
-                >
-                    <UI.Image
-                        src={
-                            Config.restAddress +
-                            "/uploads/memes/" +
-                            image +
-                            ".png"
-                        }
-                        width="100%"
-                        height="auto"
-                        borderRadius="15px"
-                        _hover={{ cursor: "pointer" }}
-                    />
+                <Link href={"/meme/" + id}>
+                    <a>
+                        <UI.HStack>
+                            <ChatIcon fontSize="lg" fontWeight="bold" />
+                            <UI.Text
+                                fontSize={{ base: "md", lg: "lg" }}
+                                fontWeight="bold"
+                            >
+                                {commentsAmount}
+                            </UI.Text>
+                        </UI.HStack>
+                    </a>
                 </Link>
+            </UI.HStack>
 
-                <UI.HStack
+            <Link href={"/meme/" + id} marginTop="10px" paddingBottom="10px">
+                <UI.Image
+                    src={
+                        Config.restAddress + "/uploads/memes/" + image + ".png"
+                    }
                     width="100%"
-                    height="55px"
-                    alignItems="center"
-                    spacing={0}
+                    height="auto"
+                    borderRadius="15px"
+                    _hover={{ cursor: "pointer" }}
+                />
+            </Link>
+
+            <UI.HStack
+                width="100%"
+                height="55px"
+                alignItems="center"
+                spacing={0}
+            >
+                <UI.Text
+                    fontSize={{ base: "xl", lg: "2xl" }}
+                    color={Config.Accent}
+                    fontWeight="bold"
+                    paddingRight="15px"
                 >
-                    <UI.Text
-                        fontSize={{ base: "xl", lg: "2xl" }}
-                        color={Config.Accent}
-                        fontWeight="bold"
-                        paddingRight="15px"
-                    >
-                        <Link href={"/users/" + author}>{author}</Link>
-                    </UI.Text>
+                    <Link href={"/users/" + author}>{author}</Link>
+                </UI.Text>
 
-                    <UI.Text fontSize={{ base: "md", lg: "lg" }}>
-                        {timeSince(new Date(parseInt(uploadDate)))}
-                    </UI.Text>
+                <UI.Text fontSize={{ base: "md", lg: "lg" }}>
+                    {timeSince(new Date(parseInt(uploadDate)))}
+                </UI.Text>
 
-                    <UI.Spacer />
+                <UI.Spacer />
 
-                    <VoteButton
-                        plus="true"
-                        size="32px"
-                        voted={currentUserVote}
-                        onClick={async () => {
-                            const response = await vote(id, true, true);
+                <VoteButton
+                    plus="true"
+                    size="32px"
+                    voted={currentUserVote}
+                    onClick={async () => {
+                        const response = await vote(id, true, true);
 
-                            if (response === undefined) {
-                                return;
-                            }
+                        if (response === undefined) {
+                            return;
+                        }
 
-                            let { newVotes, newState } = response;
-                            setCurrentVotes(newVotes);
-                            if (newState === -1) {
-                                setCurrentUserVote(undefined);
-                            } else {
-                                setCurrentUserVote(newState === 1);
-                            }
-                        }}
-                    />
+                        let { newVotes, newState } = response;
+                        setCurrentVotes(newVotes);
+                        if (newState === -1) {
+                            setCurrentUserVote(undefined);
+                        } else {
+                            setCurrentUserVote(newState === 1);
+                        }
+                    }}
+                />
 
-                    <UI.Text
-                        fontSize={{ base: "md", lg: "lg" }}
-                        fontWeight="bold"
-                        paddingLeft="10px"
-                        paddingRight="10px"
-                    >
-                        {currentVotes}
-                    </UI.Text>
+                <UI.Text
+                    fontSize={{ base: "md", lg: "lg" }}
+                    fontWeight="bold"
+                    paddingLeft="10px"
+                    paddingRight="10px"
+                >
+                    {currentVotes}
+                </UI.Text>
 
-                    <VoteButton
-                        plus="false"
-                        size="32px"
-                        voted={currentUserVote}
-                        onClick={async () => {
-                            const response = await vote(id, true, false);
+                <VoteButton
+                    plus="false"
+                    size="32px"
+                    voted={currentUserVote}
+                    onClick={async () => {
+                        const response = await vote(id, true, false);
 
-                            if (response === undefined) {
-                                return;
-                            }
+                        if (response === undefined) {
+                            return;
+                        }
 
-                            let { newVotes, newState } = response;
-                            setCurrentVotes(newVotes);
-                            if (newState === -1) {
-                                setCurrentUserVote(undefined);
-                            } else {
-                                setCurrentUserVote(newState === 1);
-                            }
-                        }}
-                    />
-                </UI.HStack>
-            </UI.VStack>
-        </Link>
+                        let { newVotes, newState } = response;
+                        setCurrentVotes(newVotes);
+                        if (newState === -1) {
+                            setCurrentUserVote(undefined);
+                        } else {
+                            setCurrentUserVote(newState === 1);
+                        }
+                    }}
+                />
+            </UI.HStack>
+        </UI.VStack>
     );
 };

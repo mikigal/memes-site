@@ -1,11 +1,13 @@
 package pl.mikigal.memes.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import pl.mikigal.memes.data.dto.MemeDto;
+import pl.mikigal.memes.data.dto.MemesListDto;
 import pl.mikigal.memes.data.dto.RestResponse;
 import pl.mikigal.memes.data.meme.Meme;
 import pl.mikigal.memes.data.meme.MemeRepository;
@@ -17,8 +19,10 @@ import java.util.stream.Collectors;
 @RestController
 public class RootController {
 
+    private final int memesPerPage;
     private final MemeRepository memeRepository;
-    public RootController(MemeRepository memeRepository) {
+    public RootController(@Value("${memes.memesPerPage}") int memesPerPage, MemeRepository memeRepository) {
+        this.memesPerPage = memesPerPage;
         this.memeRepository = memeRepository;
     }
 
@@ -28,10 +32,8 @@ public class RootController {
             return ResponseEntity.badRequest().body(new RestResponse(false, "invalid page id"));
         }
 
-        return memeRepository.findWithOffset(10, page * 10)
-                .stream()
-                .map(meme -> new MemeDto(meme, false))
-                .collect(Collectors.toList());
+        return new MemesListDto((int) Math.ceil((double) this.memeRepository.countMemes() / this.memesPerPage),
+                this.memeRepository.findWithOffset(this.memesPerPage, page * this.memesPerPage));
     }
 
     @GetMapping("/meme/{id}")

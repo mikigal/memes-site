@@ -11,7 +11,9 @@ import useSWR from "swr";
 
 export default function Index() {
     const router = useRouter();
-    const page = router.query.page == undefined ? 0 : router.query.page;
+    const page = parseInt(
+        router.query.page == undefined ? 0 : router.query.page
+    );
 
     const { data, error } = useSWR(
         Config.restAddress + "/memes?page=" + page,
@@ -38,7 +40,7 @@ export default function Index() {
     return (
         <>
             <MemeUploader currentPage={page} />
-            {data.map((meme) => (
+            {data.memes.map((meme) => (
                 <Meme
                     key={meme.id}
                     id={meme.id}
@@ -50,6 +52,49 @@ export default function Index() {
                     image={meme.image}
                 />
             ))}
+
+            <UI.HStack paddingLeft="7%" paddingRight="7%" marginBottom="10px">
+                <PageButton
+                    redirectTo={page - 1}
+                    lastPage={data.pages}
+                    text="Previous page"
+                />
+                <UI.Spacer />
+                <UI.Text fontSize="2xl" fontWeight="bold">
+                    {page + 1}
+                </UI.Text>
+                <UI.Spacer />
+                <PageButton
+                    redirectTo={page + 1}
+                    maxPages={data.pages}
+                    text="Next page"
+                />
+            </UI.HStack>
         </>
     );
 }
+
+const PageButton = (props) => {
+    const { redirectTo, maxPages, text } = props;
+    const router = useRouter();
+
+    return (
+        <UI.Button
+            variant="outline"
+            width="40%"
+            height="50px"
+            borderColor={Config.Text}
+            color={Config.Text}
+            disabled={redirectTo === -1 || redirectTo === maxPages}
+            _hover={{
+                color: Config.Accent,
+                borderColor: Config.Accent,
+            }}
+            onClick={() => {
+                router.push("/?page=" + redirectTo);
+            }}
+        >
+            {text}
+        </UI.Button>
+    );
+};

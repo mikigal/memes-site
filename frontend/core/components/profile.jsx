@@ -151,10 +151,14 @@ export const LoginForm = (props) => {
             marginBottom={popover ? "0px" : "20px"}
         >
             <Formik
-                initialValues={{ username: "", password: "" }}
+                initialValues={{ usernameLogin: "", passwordLogin: "" }}
                 validationSchema={Yup.object().shape({
-                    username: Yup.string().required("This field is required"),
-                    password: Yup.string().required("This field is required"),
+                    usernameLogin: Yup.string().required(
+                        "This field is required"
+                    ),
+                    passwordLogin: Yup.string().required(
+                        "This field is required"
+                    ),
                 })}
                 onSubmit={async (values, actions) => {
                     const response = await fetch(
@@ -167,8 +171,8 @@ export const LoginForm = (props) => {
                                 "Content-Type": "application/json",
                             },
                             body: JSON.stringify({
-                                username: values.username,
-                                password: values.password,
+                                username: values.usernameLogin,
+                                password: values.passwordLogin,
                             }),
                         }
                     );
@@ -205,13 +209,13 @@ export const LoginForm = (props) => {
                     <Form>
                         <UI.VStack align="center" spacing="10px">
                             <TextInput
-                                id="username"
+                                id="usernameLogin"
                                 type="text"
                                 placeholder="Username"
                                 label="Username"
                             />
                             <TextInput
-                                id="password"
+                                id="passwordLogin"
                                 type="password"
                                 placeholder="Password"
                                 label="Password"

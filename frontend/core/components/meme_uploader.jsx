@@ -62,6 +62,7 @@ export const MemeUploader = (props) => {
         setUploading(false);
         setFile(undefined);
         setTitle("");
+        setDropMessage("");
 
         if (error === null) {
             mutate(Config.restAddress + "/memes?page=" + currentPage);

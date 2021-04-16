@@ -11,6 +11,9 @@ public interface MemeRepository extends CrudRepository<Meme, Integer> {
     @Query(value="SELECT * FROM memes ORDER BY upload_date DESC LIMIT :limit OFFSET :offset", nativeQuery = true)
     List<Meme> findWithOffset(int limit, int offset);
 
-    @Query(value="SELECT * FROM memes WHERE upload_date >= :since ORDER BY votes DESC LIMIT 7", nativeQuery = true)
+    @Query(value="SELECT * FROM memes WHERE upload_date >= :since ORDER BY votes DESC LIMIT 3", nativeQuery = true)
     List<Meme> findMostPopularSince(Date since);
+
+    @Query(value="SELECT COUNT(id) FROM memes", nativeQuery = true)
+    int countMemes();
 }

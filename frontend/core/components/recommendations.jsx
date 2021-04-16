@@ -44,7 +44,7 @@ export const Recommendations = () => {
                 Recommendations
             </UI.Text>
 
-            <UI.VStack spacing="15px">
+            <UI.VStack spacing="15px" width="100%">
                 {data.map((meme) => (
                     <RecommendationsEntry
                         key={meme.id}
@@ -62,40 +62,33 @@ const RecommendationsEntry = (props) => {
     const { id, title, image } = props;
     return (
         <Link href={"/meme/" + id}>
-            <a>
-                <UI.VStack spacing="130px">
-                    <UI.Image
-                        src={
-                            Config.restAddress +
-                            "/uploads/memes/" +
-                            image +
-                            ".png"
-                        }
-                        width="340px"
-                        height="auto"
-                        maxHeight="170px"
-                        borderRadius="15px"
-                        objectFit="cover"
-                        objectPosition="100% 0"
-                        _hover={{ cursor: "pointer" }}
-                    />
-
-                    <UI.Flex
-                        height="40px"
-                        width="340px"
-                        alignItems="center"
-                        justifyContent="center"
-                        borderBottomLeftRadius="15px"
-                        borderBottomRightRadius="15px"
-                        position="absolute"
-                        backgroundColor="#101114F0"
-                    >
-                        <UI.Text fontSize={{ base: "md", lg: "lg" }}>
-                            {title}
-                        </UI.Text>
-                    </UI.Flex>
-                </UI.VStack>
-            </a>
+            <UI.Flex
+                width="100%"
+                height="170px"
+                borderRadius="15px"
+                backgroundSize="cover"
+                backgroundImage={
+                    "url(" +
+                    Config.restAddress +
+                    "/uploads/memes/" +
+                    image +
+                    ".png)"
+                }
+                _hover={{ cursor: "pointer" }}
+            >
+                <UI.Center
+                    alignSelf="flex-end"
+                    width="100%"
+                    height="40px"
+                    borderBottomLeftRadius="15px"
+                    borderBottomRightRadius="15px"
+                    backgroundColor="#101114F0"
+                >
+                    <UI.Text fontSize={{ base: "md", lg: "xl" }}>
+                        {title}
+                    </UI.Text>
+                </UI.Center>
+            </UI.Flex>
         </Link>
     );
 };
