@@ -135,6 +135,8 @@ const Comment = (props) => {
             marginLeft={isReply ? "7%" : "0"}
             paddingTop={isReply ? "15px" : "0"}
             paddingBottom={isReply ? "0" : "15px"}
+            paddingLeft="15px"
+            paddingRight={isReply ? "0px" : "15px"}
         >
             <UI.HStack>
                 <UI.Image

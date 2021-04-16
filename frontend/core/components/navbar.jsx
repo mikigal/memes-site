@@ -1,16 +1,23 @@
 import * as UI from "@chakra-ui/react";
-
 import * as Config from "../config.json";
+import * as API from "../utils/api";
 
+import { formatDate } from "../utils/utils";
 import { BellIcon } from "@chakra-ui/icons";
 import { useRouter } from "next/router";
+import { mutate } from "swr";
 import Link from "next/link";
 
 export const Navbar = () => {
+    const { user, loading } = API.useUser();
     const logo = UI.useBreakpointValue({
         base: "/logo-min.png",
         md: "/logo.png",
     });
+
+    if (loading) {
+        return <UI.Text>Loading...</UI.Text>;
+    }
 
     return (
         <UI.Flex
@@ -33,24 +40,157 @@ export const Navbar = () => {
                 <NavbarEntry target="/newest" name="Newest" />
                 <NavbarSeparator />
                 <NavbarEntry target="/top" name="Top" />
-                <NavbarSeparator />
+                {user !== undefined && (
+                    <UI.Text
+                        fontWeight="light"
+                        paddingLeft="15px"
+                        paddingRight="5px"
+                    >
+                        |
+                    </UI.Text>
+                )}
 
-                <UI.Box>
-                    <BellIcon fontSize={{ base: "25px", lg: "30px" }} />
+                <UI.Popover>
+                    <UI.PopoverTrigger>
+                        <UI.Button
+                            display={user === undefined ? "none" : "block"}
+                            background="transparent"
+                            width="1px"
+                            _hover={{ background: "transparent" }}
+                            _active={{ background: "transparent" }}
+                            _focus={{ background: "transparent" }}
+                            disabled={
+                                user === undefined ||
+                                user.notifications.length === 0
+                            }
+                        >
+                            <UI.Box>
+                                <BellIcon
+                                    fontSize={{ base: "25px", lg: "30px" }}
+                                />
 
-                    <UI.Box
-                        width={{ base: "8px", lg: "9px" }}
-                        height={{ base: "8px", lg: "9px" }}
-                        position="fixed"
-                        zIndex="11"
-                        marginTop={{ base: "-21px", lg: "-26px" }}
-                        marginLeft={{ base: "13px", lg: "17px" }}
-                        borderRadius="360"
-                        backgroundColor="red"
-                    ></UI.Box>
-                </UI.Box>
+                                <UI.Box
+                                    display={
+                                        user === undefined ||
+                                        user.notifications.length === 0
+                                            ? "none"
+                                            : "block"
+                                    }
+                                    width={{ base: "8px", lg: "9px" }}
+                                    height={{ base: "8px", lg: "9px" }}
+                                    position="fixed"
+                                    zIndex="11"
+                                    marginTop={{ base: "-21px", lg: "-26px" }}
+                                    marginLeft={{ base: "13px", lg: "17px" }}
+                                    borderRadius="360"
+                                    backgroundColor="red"
+                                ></UI.Box>
+                            </UI.Box>
+                        </UI.Button>
+                    </UI.PopoverTrigger>
+                    <UI.PopoverContent
+                        background={Config.BackgroundDarker}
+                        border="none"
+                        borderRadius="15px"
+                        width="370px"
+                        maxWidth="90vw"
+                    >
+                        <UI.PopoverArrow />
+                        <UI.PopoverCloseButton
+                            fontSize="md"
+                            marginTop="4px"
+                            _hover={{ color: Config.Accent }}
+                            transition="color 0.15s ease"
+                        />
+                        <UI.PopoverHeader fontSize="lg">
+                            Notifications
+                        </UI.PopoverHeader>
+                        <UI.PopoverBody>
+                            <UI.VStack
+                                divider={
+                                    <UI.StackDivider
+                                        borderColor={Config.Text}
+                                    />
+                                }
+                            >
+                                {user !== undefined &&
+                                    user.notifications.map((notification) => (
+                                        <Notification
+                                            key={notification.id}
+                                            id={notification.id}
+                                            memeId={notification.memeId}
+                                            memeImage={notification.memeImage}
+                                            date={notification.date}
+                                            pingedBy={notification.pingedBy}
+                                        />
+                                    ))}
+                                <UI.Text
+                                    _hover={{
+                                        color: Config.Accent,
+                                        cursor: "pointer",
+                                    }}
+                                    transition="color 0.15s ease"
+                                    onClick={() => {
+                                        API.sendAuthorizedRequest(
+                                            "/read_all_notifications",
+                                            "POST",
+                                            {}
+                                        );
+
+                                        mutate(Config.restAddress + "/user");
+                                    }}
+                                >
+                                    Mark all as read
+                                </UI.Text>
+                            </UI.VStack>
+                        </UI.PopoverBody>
+                    </UI.PopoverContent>
+                </UI.Popover>
             </UI.HStack>
         </UI.Flex>
+    );
+};
+
+const Notification = (props) => {
+    const { id, memeId, memeImage, date, pingedBy } = props;
+    return (
+        <Link href={"/meme/" + memeId}>
+            <UI.HStack
+                width="100%"
+                _hover={{ color: Config.Accent, cursor: "pointer" }}
+                transition="color 0.15s ease"
+                onClick={() => {
+                    API.sendAuthorizedRequest("/read_notification", "POST", {
+                        id: id,
+                    });
+
+                    mutate(Config.restAddress + "/user");
+                }}
+            >
+                <UI.Image
+                    width="50px"
+                    height="50px"
+                    objectFit="cover"
+                    objectPosition="100% 0"
+                    borderRadius="5px"
+                    src={
+                        Config.restAddress +
+                        "/uploads/memes/" +
+                        memeImage +
+                        ".png"
+                    }
+                />
+
+                <UI.Box>
+                    <UI.Text fontSize="sm">
+                        {"You have been called by " + pingedBy}
+                    </UI.Text>
+                    <UI.Text fontSize="sm">
+                        {formatDate(new Date(date), true)}
+                    </UI.Text>
+                </UI.Box>
+            </UI.HStack>
+        </Link>
     );
 };
 

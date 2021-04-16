@@ -3,6 +3,7 @@ import * as Yup from "yup";
 
 import * as Config from "../config.json";
 import * as API from "../utils/api";
+import { formatDate } from "../utils/utils";
 
 import { Formik, Form, useField } from "formik";
 import { useRouter } from "next/router";
@@ -24,17 +25,7 @@ export const Profile = () => {
         }
 
         let registerDate = new Date(user.registerDate);
-        let day = registerDate.getDate();
-        let month = registerDate.getMonth() + 1;
-
-        if (day < 10) {
-            day = "0" + day;
-        }
-        if (month < 10) {
-            month = "0" + month;
-        }
-
-        setParsedDate(day + "." + month + "." + registerDate.getFullYear());
+        setParsedDate(formatDate(registerDate, false));
     }, [user]);
 
     if (loading) {

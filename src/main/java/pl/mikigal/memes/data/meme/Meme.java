@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import pl.mikigal.memes.data.comment.Comment;
+import pl.mikigal.memes.data.notification.Notification;
 import pl.mikigal.memes.data.user.User;
 
 import javax.persistence.*;
@@ -31,6 +32,9 @@ public class Meme {
 
     @OneToMany(mappedBy = "meme")
     private Set<Comment> comments;
+
+    @OneToMany(mappedBy = "meme")
+    private Set<Notification> notifications;
 
     @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinTable(name = "vote_memes_plus",

@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import pl.mikigal.memes.data.comment.Comment;
 import pl.mikigal.memes.data.meme.Meme;
+import pl.mikigal.memes.data.notification.Notification;
 
 import javax.persistence.*;
 import java.util.*;
@@ -34,6 +35,9 @@ public class User {
     @OneToMany(mappedBy = "author")
     private Set<Comment> comments;
 
+    @OneToMany(mappedBy = "user")
+    private Set<Notification> notifications;
+
     @ManyToMany(mappedBy = "votedPlusUsers")
     private Set<Comment> votedPlusComments;
 
@@ -52,6 +56,8 @@ public class User {
         this.mail = mail;
         this.registerDate = new Date();
         this.memes = new HashSet<>();
+        this.comments = new HashSet<>();
+        this.notifications = new HashSet<>();
     }
 
     public int vote(Meme meme, boolean plus) {

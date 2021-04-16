@@ -24,7 +24,16 @@ export const MemeUploader = (props) => {
             setFile(files[0]);
             setDropMessage("Selected file: " + files[0].name);
         },
-        onDropRejected: () => setDropMessage("Allowed image types: JPEG, PNG"),
+        onDropRejected: (files) => {
+            const error = files[0].errors[0];
+            if (error.code === "file-invalid-type") {
+                setDropMessage("Allowed image types: JPEG, PNG");
+            } else if (error.code === "file-too-large") {
+                setDropMessage("Maximum file size: 5MB");
+            } else {
+                setDropMessage(error.message);
+            }
+        },
     });
 
     const upload = async () => {
@@ -125,7 +134,7 @@ export const MemeUploader = (props) => {
                     <UI.VStack width="100%" spacing="10px">
                         <UI.Center
                             width="100%"
-                            height="150px"
+                            height={{ base: "100px", lg: "150px" }}
                             borderWidth="1px"
                             borderStyle="dashed"
                             borderRadius="5px"
@@ -138,11 +147,14 @@ export const MemeUploader = (props) => {
                             <input {...getInputProps()} />
                             <UI.Icon
                                 as={FaFileUpload}
-                                width="26px"
-                                height="26px"
+                                width={{ base: "23px", lg: "26px" }}
+                                height={{ base: "23px", lg: "26px" }}
                                 marginRight="8px"
                             />
-                            <UI.Text fontSize="xl" fontWeight="bold">
+                            <UI.Text
+                                fontSize={{ base: "lg", lg: "xl" }}
+                                fontWeight="bold"
+                            >
                                 {isDragActive
                                     ? "Drop your meme here"
                                     : "Select your meme"}
@@ -164,7 +176,12 @@ export const MemeUploader = (props) => {
                             Upload
                         </UI.Button>
 
-                        <UI.Text fontSize="lg">{dropMessage}</UI.Text>
+                        <UI.Text
+                            fontSize={{ base: "md", lg: "lg" }}
+                            textAlign="center"
+                        >
+                            {dropMessage}
+                        </UI.Text>
                     </UI.VStack>
                 </UI.Collapse>
             </UI.Center>

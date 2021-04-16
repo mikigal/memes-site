@@ -3,9 +3,11 @@ package pl.mikigal.memes.data.dto;
 import lombok.Getter;
 import pl.mikigal.memes.data.comment.Comment;
 import pl.mikigal.memes.data.meme.Meme;
+import pl.mikigal.memes.data.notification.Notification;
 import pl.mikigal.memes.data.user.User;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Getter
 public class UserDto {
@@ -15,6 +17,7 @@ public class UserDto {
     private final UUID avatar;
     private final int memesAmount;
     private final int commentsAmount;
+    private final List<NotificationDto> notifications;
 
     private final Map<Integer, Boolean> votedMemes;
     private final Map<Integer, Boolean> votedComments;
@@ -26,6 +29,11 @@ public class UserDto {
         this.avatar = user.getAvatar();
         this.memesAmount = user.getMemes().size();
         this.commentsAmount = user.getComments().size();
+        this.notifications = user.getNotifications()
+                .stream()
+                .sorted(Comparator.comparing(Notification::getDate)) // Reverse?
+                .map(NotificationDto::new)
+                .collect(Collectors.toList());
 
         this.votedMemes = new HashMap<>();
         this.votedComments = new HashMap<>();
