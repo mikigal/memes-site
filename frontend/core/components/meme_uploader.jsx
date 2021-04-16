@@ -157,7 +157,9 @@ export const MemeUploader = (props) => {
                             >
                                 {isDragActive
                                     ? "Drop your meme here"
-                                    : "Select your meme"}
+                                    : file === undefined
+                                    ? "Select your meme"
+                                    : "Selected 1 image"}
                             </UI.Text>
                         </UI.Center>
                         <UI.Button

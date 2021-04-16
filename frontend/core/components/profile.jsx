@@ -8,6 +8,7 @@ import { formatDate } from "../utils/utils";
 import { Formik, Form, useField } from "formik";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 import { BiLogOut } from "react-icons/bi";
 import { BsCardImage } from "react-icons/bs";
@@ -235,6 +236,18 @@ export const LoginForm = (props) => {
                     </Form>
                 )}
             </Formik>
+
+            <Link href="/register">
+                <UI.Text
+                    textAlign="center"
+                    marginTop="7px"
+                    fontSize="lg"
+                    _hover={{ color: Config.Accent, cursor: "pointer" }}
+                    transition="color 0.15s ease"
+                >
+                    New user? Register here
+                </UI.Text>
+            </Link>
         </UI.Box>
     );
 };

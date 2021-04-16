@@ -3,6 +3,7 @@ package pl.mikigal.memes.data.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
 
@@ -16,6 +17,13 @@ public class RegisterFormDto {
     @Size(min = 6, max = 32)
     private final String password;
 
+    @Size(min = 6, max = 32)
+    private final String repeatPassword;
+
+    @AssertTrue
+    private final boolean termsOfService;
+
     @Email
+    @Size(min = 6, max = 32)
     private final String mail;
 }
