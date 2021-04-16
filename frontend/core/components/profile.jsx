@@ -37,7 +37,7 @@ export const Profile = () => {
     }
 
     if (user === undefined) {
-        return <LoginForm />;
+        return <LoginForm popover={false} />;
     }
 
     return (
@@ -138,16 +138,16 @@ export const Profile = () => {
     );
 };
 
-const LoginForm = () => {
+export const LoginForm = (props) => {
     const toast = UI.useToast();
-
+    const { popover, popoverClose } = props;
     return (
         <UI.Box
-            width="340px"
+            width={popover ? "320px" : "340px"}
             borderRadius="15px"
-            padding="15px"
+            padding={popover ? "0px" : "15px"}
             background={Config.BackgroundDarker}
-            marginBottom="20px"
+            marginBottom={popover ? "0px" : "20px"}
         >
             <Formik
                 initialValues={{ username: "", password: "" }}
@@ -186,6 +186,9 @@ const LoginForm = () => {
                         return;
                     }
 
+                    if (popover) {
+                        popoverClose();
+                    }
                     toast.closeAll();
                     toast({
                         title: "Login success",
@@ -241,14 +244,14 @@ const TextInput = (props) => {
     const [field, meta] = useField(id);
 
     return (
-        <UI.Box>
+        <UI.Box width="95%">
             <UI.FormControl id={id} isInvalid={meta.error && meta.touched}>
                 <UI.FormLabel htmlFor={id}>{label}</UI.FormLabel>
                 <UI.Input
                     {...field}
                     id={id}
                     type={type}
-                    width="300px"
+                    width="100%"
                     placeholder={placeholder}
                     borderColor={Config.Text}
                     _hover={{ borderColor: Config.Accent }}
