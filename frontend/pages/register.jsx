@@ -6,12 +6,15 @@ import * as API from "../core/utils/api";
 
 import { Formik, Form, useField } from "formik";
 import { useRouter } from "next/router";
+import { useState } from "react";
 import Link from "next/link";
+import { GoogleReCaptcha } from "react-google-recaptcha-v3";
 
 export default function register() {
     const { user, loading } = API.useUser();
     const router = useRouter();
     const toast = UI.useToast();
+    const [captchaToken, setCaptchaToken] = useState("");
 
     if (loading) {
         return <UI.Text>Loading...</UI.Text>;
@@ -97,6 +100,7 @@ export default function register() {
                                 password: values.password,
                                 repeatPassword: values.repeatPassword,
                                 termsOfService: values.termsOfService,
+                                captchaToken: captchaToken,
                             }),
                         }
                     );
@@ -157,6 +161,9 @@ export default function register() {
                                 label="Repeat password"
                             />
                             <TermsOfServiceInput />
+
+                            <GoogleReCaptcha onVerify={setCaptchaToken} />
+
                             <UI.Button
                                 isLoading={props.isSubmitting}
                                 isDisabled={!props.isValid}

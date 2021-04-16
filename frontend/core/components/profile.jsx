@@ -8,6 +8,7 @@ import { formatDate } from "../utils/utils";
 import { Formik, Form, useField } from "formik";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
+import { GoogleReCaptcha } from "react-google-recaptcha-v3";
 import Link from "next/link";
 
 import { BiLogOut } from "react-icons/bi";
@@ -19,6 +20,11 @@ export const Profile = () => {
     const router = useRouter();
     const [parsedDate, setParsedDate] = useState();
     const { loading, user } = API.useUser();
+
+    const navbarLogin = UI.useBreakpointValue({
+        base: "block",
+        md: "none",
+    });
 
     useEffect(() => {
         if (loading || user === undefined) {
@@ -38,7 +44,7 @@ export const Profile = () => {
     }
 
     if (user === undefined) {
-        return <LoginForm popover={false} />;
+        return <>{navbarLogin === "none" && <LoginForm popover={false} />}</>;
     }
 
     return (
@@ -142,6 +148,8 @@ export const Profile = () => {
 export const LoginForm = (props) => {
     const toast = UI.useToast();
     const { popover, popoverClose } = props;
+    const [captchaToken, setCaptchaToken] = useState("");
+
     return (
         <UI.Box
             width={popover ? "320px" : "340px"}
@@ -173,6 +181,7 @@ export const LoginForm = (props) => {
                             body: JSON.stringify({
                                 username: values.usernameLogin,
                                 password: values.passwordLogin,
+                                captchaToken: captchaToken,
                             }),
                         }
                     );
@@ -182,7 +191,10 @@ export const LoginForm = (props) => {
                     if (response.status !== 200) {
                         toast({
                             title: "Login error",
-                            description: "Invalid username or password",
+                            description:
+                                response.status === 400
+                                    ? "Are you a robot?"
+                                    : "Invalid username or password",
                             status: "error",
                             duration: 6000,
                             isClosable: true,
@@ -220,6 +232,9 @@ export const LoginForm = (props) => {
                                 placeholder="Password"
                                 label="Password"
                             />
+
+                            <GoogleReCaptcha onVerify={setCaptchaToken} />
+
                             <UI.Button
                                 isLoading={props.isSubmitting}
                                 isDisabled={!props.isValid}

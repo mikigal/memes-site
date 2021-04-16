@@ -20,6 +20,16 @@ export default function Index() {
         fetcher
     );
 
+    const previousPageText = UI.useBreakpointValue({
+        base: "Previous",
+        md: "Previous page",
+    });
+
+    const nextPageText = UI.useBreakpointValue({
+        base: "Next",
+        md: "Next page",
+    });
+
     if (error) {
         return (
             <ErrorAlert
@@ -57,17 +67,20 @@ export default function Index() {
                 <PageButton
                     redirectTo={page - 1}
                     lastPage={data.pages}
-                    text="Previous page"
+                    text={previousPageText}
                 />
                 <UI.Spacer />
-                <UI.Text fontSize="2xl" fontWeight="bold">
+                <UI.Text
+                    fontSize={{ base: "2xl", md: "30px" }}
+                    fontWeight="bold"
+                >
                     {page + 1}
                 </UI.Text>
                 <UI.Spacer />
                 <PageButton
                     redirectTo={page + 1}
                     maxPages={data.pages}
-                    text="Next page"
+                    text={nextPageText}
                 />
             </UI.HStack>
         </>
@@ -82,7 +95,7 @@ const PageButton = (props) => {
         <UI.Button
             variant="outline"
             width="40%"
-            height="50px"
+            height="45px"
             borderColor={Config.Text}
             color={Config.Text}
             disabled={redirectTo === -1 || redirectTo === maxPages}

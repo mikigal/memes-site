@@ -5,6 +5,7 @@ import lombok.Getter;
 
 import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Getter
@@ -26,4 +27,7 @@ public class RegisterFormDto {
     @Email
     @Size(min = 6, max = 32)
     private final String mail;
+
+    @NotBlank
+    private final String captchaToken;
 }

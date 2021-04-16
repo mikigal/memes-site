@@ -15,6 +15,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import pl.mikigal.memes.service.RecaptchaValidationService;
 import pl.mikigal.memes.service.UserDetailsServiceImpl;
 
 import java.util.Arrays;
@@ -29,17 +30,20 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final RestAuthenticationSuccessHandler authenticationSuccessHandler;
     private final RestAuthenticationFailureHandler authenticationFailureHandler;
     private final RestAuthenticationLogoutHandler authenticationLogoutHandler;
+    private final RecaptchaValidationService recaptchaValidationService;
 
     public SecurityConfiguration(@Value("${memes.corsAllowed}") String corsAllowed,
                                  UserDetailsServiceImpl userDetailsService,
                                  RestAuthenticationSuccessHandler authenticationSuccessHandler,
                                  RestAuthenticationFailureHandler authenticationFailureHandler,
-                                 RestAuthenticationLogoutHandler authenticationLogoutHandler) {
+                                 RestAuthenticationLogoutHandler authenticationLogoutHandler,
+                                 RecaptchaValidationService recaptchaValidationService) {
         this.corsAllowed = corsAllowed;
         this.userDetailsService = userDetailsService;
         this.authenticationSuccessHandler = authenticationSuccessHandler;
         this.authenticationFailureHandler = authenticationFailureHandler;
         this.authenticationLogoutHandler = authenticationLogoutHandler;
+        this.recaptchaValidationService = recaptchaValidationService;
     }
 
     @Override
@@ -83,7 +87,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Bean
     public JsonObjectAuthenticationFilter authenticationFilter() throws Exception {
-        JsonObjectAuthenticationFilter filter = new JsonObjectAuthenticationFilter();
+        JsonObjectAuthenticationFilter filter = new JsonObjectAuthenticationFilter(this.recaptchaValidationService);
         filter.setAuthenticationSuccessHandler(this.authenticationSuccessHandler);
         filter.setAuthenticationFailureHandler(this.authenticationFailureHandler);
         filter.setAuthenticationManager(super.authenticationManager());

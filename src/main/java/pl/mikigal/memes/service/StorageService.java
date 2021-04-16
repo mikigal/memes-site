@@ -2,6 +2,7 @@ package pl.mikigal.memes.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import pl.mikigal.memes.data.UploadType;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

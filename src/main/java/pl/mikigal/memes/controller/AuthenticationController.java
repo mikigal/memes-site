@@ -10,6 +10,7 @@ import pl.mikigal.memes.data.dto.RegisterFormDto;
 import pl.mikigal.memes.data.dto.RestResponse;
 import pl.mikigal.memes.data.user.User;
 import pl.mikigal.memes.data.user.UserRepository;
+import pl.mikigal.memes.service.RecaptchaValidationService;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -19,15 +20,23 @@ import javax.validation.Valid;
 public class AuthenticationController {
 
     private final UserRepository userRepository;
+    private final RecaptchaValidationService recaptchaValidationService;
     private final PasswordEncoder passwordEncoder;
 
-    public AuthenticationController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public AuthenticationController(UserRepository userRepository,
+                                    RecaptchaValidationService recaptchaValidationService,
+                                    PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.recaptchaValidationService = recaptchaValidationService;
     }
 
     @PostMapping("/register")
     public Object register(@Valid @RequestBody RegisterFormDto registerForm, HttpServletRequest request, Authentication authentication) {
+        if (!this.recaptchaValidationService.validate(registerForm.getCaptchaToken())) {
+            return ResponseEntity.badRequest().body(new RestResponse(false, "Are you a robot?"));
+        }
+
         if (authentication != null) {
             return ResponseEntity.badRequest().body(new RestResponse(false, "You are already logged in"));
         }

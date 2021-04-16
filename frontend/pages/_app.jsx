@@ -4,6 +4,7 @@ import { Navbar } from "../core/components/navbar";
 import { Profile } from "../core/components/profile";
 import { Recommendations } from "../core/components/recommendations";
 import { createBreakpoints } from "@chakra-ui/theme-tools";
+import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
 
 import Router from "next/router";
 import NProgress from "nprogress";
@@ -41,39 +42,41 @@ const theme = UI.extendTheme({
 
 const App = ({ Component, pageProps }) => {
     return (
-        <UI.ChakraProvider theme={theme}>
-            <Navbar />
-            <UI.Box
-                marginLeft={{
-                    base: "0",
-                    lg: "10%",
-                    xl: "19%",
-                    "2xl": "27%",
-                }}
-                marginRight={{
-                    base: "0",
-                    lg: "10%",
-                    xl: "19%",
-                    "2xl": "27%",
-                }}
-                padding="15px"
-            >
-                <UI.Flex height="100%" width="100%" paddingTop="75px">
-                    <UI.Box width={{ base: "100%", md: "60%" }}>
-                        <Component {...pageProps} />
-                    </UI.Box>
-                    <UI.VStack
-                        position="fixed"
-                        display={{ base: "none", md: "block" }}
-                        width={{ base: "40%", "2xl": "24%" }}
-                        right={{ base: "0", "2xl": "20%" }}
-                    >
-                        <Profile />
-                        <Recommendations />
-                    </UI.VStack>
-                </UI.Flex>
-            </UI.Box>
-        </UI.ChakraProvider>
+        <GoogleReCaptchaProvider reCaptchaKey={Config.recaptchaSiteKey}>
+            <UI.ChakraProvider theme={theme}>
+                <Navbar />
+                <UI.Box
+                    marginLeft={{
+                        base: "0",
+                        lg: "10%",
+                        xl: "19%",
+                        "2xl": "27%",
+                    }}
+                    marginRight={{
+                        base: "0",
+                        lg: "10%",
+                        xl: "19%",
+                        "2xl": "27%",
+                    }}
+                    padding="15px"
+                >
+                    <UI.Flex height="100%" width="100%" paddingTop="75px">
+                        <UI.Box width={{ base: "100%", md: "60%" }}>
+                            <Component {...pageProps} />
+                        </UI.Box>
+                        <UI.VStack
+                            position="fixed"
+                            display={{ base: "none", md: "block" }}
+                            width={{ base: "40%", "2xl": "24%" }}
+                            right={{ base: "0", "2xl": "20%" }}
+                        >
+                            <Profile />
+                            <Recommendations />
+                        </UI.VStack>
+                    </UI.Flex>
+                </UI.Box>
+            </UI.ChakraProvider>
+        </GoogleReCaptchaProvider>
     );
 };
 

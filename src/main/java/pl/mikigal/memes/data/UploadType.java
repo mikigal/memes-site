@@ -1,4 +1,4 @@
-package pl.mikigal.memes.service;
+package pl.mikigal.memes.data;
 
 public enum UploadType {
     MEME, USER

@@ -14,7 +14,7 @@ import pl.mikigal.memes.data.notification.NotificationRepository;
 import pl.mikigal.memes.data.user.User;
 import pl.mikigal.memes.data.user.UserRepository;
 import pl.mikigal.memes.service.StorageService;
-import pl.mikigal.memes.service.UploadType;
+import pl.mikigal.memes.data.UploadType;
 
 import javax.validation.Valid;
 import java.io.IOException;

@@ -223,10 +223,12 @@ export const Navbar = () => {
                                     Login
                                 </UI.PopoverHeader>
                                 <UI.PopoverBody>
-                                    <LoginForm
-                                        popover={true}
-                                        popoverClose={onClose}
-                                    />
+                                    {navbarLogin === "block" && (
+                                        <LoginForm
+                                            popover={true}
+                                            popoverClose={onClose}
+                                        />
+                                    )}
                                 </UI.PopoverBody>
                             </UI.PopoverContent>
                         </>
