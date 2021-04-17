@@ -3,6 +3,7 @@ package pl.mikigal.memes.data.meme;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import pl.mikigal.memes.data.Votable;
 import pl.mikigal.memes.data.comment.Comment;
 import pl.mikigal.memes.data.notification.Notification;
 import pl.mikigal.memes.data.user.User;
@@ -15,7 +16,7 @@ import java.util.*;
 @NoArgsConstructor
 @Entity
 @Table(name = "memes")
-public class Meme {
+public class Meme implements Votable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,5 +58,25 @@ public class Meme {
         this.uploadDate = new Date();
         this.votes = 0;
         this.comments = new HashSet<>();
+    }
+
+    @Override
+    public Set<User> getVotedMinusUsers() {
+        return this.votedMinusUsers;
+    }
+
+    @Override
+    public Set<User> getVotedPlusUsers() {
+        return this.votedPlusUsers;
+    }
+
+    @Override
+    public int getVotes() {
+        return this.votes;
+    }
+
+    @Override
+    public void setVotes(int votes) {
+        this.votes = votes;
     }
 }

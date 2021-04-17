@@ -24,6 +24,16 @@ export const Meme = (props) => {
     const [currentVotes, setCurrentVotes] = useState(votes);
     const [currentUserVote, setCurrentUserVote] = useState(userVote);
 
+    useEffect(() => {
+        if (loading) {
+            return;
+        }
+
+        setCurrentUserVote(
+            user === undefined ? undefined : user.votedMemes[id]
+        );
+    }, [user]);
+
     if (loading) {
         return <UI.Text>Loading...</UI.Text>;
     }

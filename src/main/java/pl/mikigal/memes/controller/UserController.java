@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import pl.mikigal.memes.data.Votable;
 import pl.mikigal.memes.data.comment.Comment;
 import pl.mikigal.memes.data.comment.CommentRepository;
 import pl.mikigal.memes.data.dto.*;
@@ -60,29 +61,18 @@ public class UserController {
 			return ResponseEntity.badRequest().body(new RestResponse(false, "invalid user"));
 		}
 
-		if (vote.isMeme()) {
-			Optional<Meme> optional = this.memeRepository.findById(vote.getId());
-			if (!optional.isPresent()) {
-				return ResponseEntity.badRequest().body(new RestResponse(false, "invalid meme id"));
-			}
+		Optional<Votable> votableOptional = (Optional<Votable>) (vote.isMeme() ?
+				this.memeRepository.findById(vote.getId()) : this.commentRepository.findById(vote.getId()));
 
-			Meme meme = optional.get();
-			int newState = user.vote(meme, vote.isPlus());
-			meme = this.memeRepository.save(meme);
-
-			return new VoteResponseDto(meme.getVotes(), newState);
+		if (!votableOptional.isPresent()) {
+			return ResponseEntity.badRequest().body(new RestResponse(false, "invalid votable id"));
 		}
 
-		Optional<Comment> optional = this.commentRepository.findById(vote.getId());
-		if (!optional.isPresent()) {
-			return ResponseEntity.badRequest().body(new RestResponse(false, "invalid comment id"));
-		}
+		Votable votable = votableOptional.get();
+		int newState = user.vote(votable, vote.isPlus());
+		votable = vote.isMeme() ? this.memeRepository.save((Meme) votable) : this.commentRepository.save((Comment) votable);
 
-		Comment comment = optional.get();
-		int newState = user.vote(comment, vote.isPlus());
-		comment = commentRepository.save(comment);
-
-		return new VoteResponseDto(comment.getVotes(), newState);
+		return new VoteResponseDto(votable.getVotes(), newState);
 	}
 
 	@PostMapping("/upload_meme")
