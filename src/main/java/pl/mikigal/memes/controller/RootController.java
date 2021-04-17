@@ -8,9 +8,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import pl.mikigal.memes.data.dto.MemeDto;
 import pl.mikigal.memes.data.dto.MemesListDto;
+import pl.mikigal.memes.data.dto.ProfileDto;
 import pl.mikigal.memes.data.dto.RestResponse;
 import pl.mikigal.memes.data.meme.Meme;
 import pl.mikigal.memes.data.meme.MemeRepository;
+import pl.mikigal.memes.data.user.User;
+import pl.mikigal.memes.data.user.UserRepository;
 
 import java.util.Date;
 import java.util.Optional;
@@ -21,9 +24,12 @@ public class RootController {
 
     private final int memesPerPage;
     private final MemeRepository memeRepository;
-    public RootController(@Value("${memes.memesPerPage}") int memesPerPage, MemeRepository memeRepository) {
+    private final UserRepository userRepository;
+
+    public RootController(@Value("${memes.memesPerPage}") int memesPerPage, MemeRepository memeRepository, UserRepository userRepository) {
         this.memesPerPage = memesPerPage;
         this.memeRepository = memeRepository;
+        this.userRepository = userRepository;
     }
 
     @GetMapping("/memes")
@@ -54,26 +60,14 @@ public class RootController {
                 .collect(Collectors.toList());
     }
 
-    /*@GetMapping("/temp")
-    public Object temp() {
-        User mikigal = new User("mikigal", new BCryptPasswordEncoder().encode("zaq1@WSX"), "mikigal.priv@gmail.com");
-        mikigal.setAvatar(UUID.fromString("7064addd-ccde-4222-ac29-68e7332baf6d"));
-        mikigal = this.userRepository.save(mikigal);
+    @GetMapping("/profile")
+    public Object profile(@RequestParam int page, @RequestParam String username) {
+        User user = this.userRepository.findByUsername(username);
+        if (user == null) {
+            return ResponseEntity.status(404).body(new RestResponse(false, "User with this username does not exists"));
+        }
 
-        User socket = new User("SocketByte", new BCryptPasswordEncoder().encode("zaq1@WSX"), "a01@mikigal.pl");
-        socket.setAvatar(UUID.fromString("c1e5f057-17d1-4e50-a5e6-3d78e3a4e3f8"));
-        socket = this.userRepository.save(socket);
-
-        Meme first = this.memeRepository.save(new Meme(mikigal, "First meme", UUID.fromString("d73e1522-452b-40ef-bd3f-6dd5dd3749b8")));
-        Meme second = this.memeRepository.save(new Meme(mikigal, "Second meme", UUID.fromString("54a33173-4954-4697-9857-dd15f53323e6")));
-        Meme third = this.memeRepository.save( new Meme(socket, "Third meme", UUID.fromString("fb2f9e61-ef9f-40eb-95bc-c8da39f9c82b")));
-
-        Comment firstComment = this.commentRepository.save(
-                new Comment(socket, third, "Therefore, database queries may be performed during view rendering. Explicitly configure", null));
-        Comment secondComment = this.commentRepository.save(
-                new Comment(socket, third, "Finished Spring Data repository scanning in 33 ms. Found 3 JPA repository interfaces.", null));
-        Comment reply = this.commentRepository.save(new Comment(mikigal, third, "It's reply!", secondComment));
-
-        return "succ";
-    }*/
+        return new ProfileDto(user, new MemesListDto((int) Math.ceil((double) user.getMemes().size() / this.memesPerPage),
+                this.memeRepository.findWithOffsetByUser(this.memesPerPage, page * this.memesPerPage, user.getId())));
+    }
 }

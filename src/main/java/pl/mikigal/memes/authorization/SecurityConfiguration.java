@@ -57,7 +57,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/recommendations").permitAll()
                 .antMatchers("/meme/**").permitAll()
                 .antMatchers("/uploads/**").permitAll()
-                .antMatchers("/temp").permitAll()
+                .antMatchers("/profile").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(authenticationFilter(), UsernamePasswordAuthenticationFilter.class)

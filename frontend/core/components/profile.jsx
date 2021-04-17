@@ -18,22 +18,12 @@ import { ChatIcon, CalendarIcon } from "@chakra-ui/icons";
 export const Profile = () => {
     const toast = UI.useToast();
     const router = useRouter();
-    const [parsedDate, setParsedDate] = useState();
     const { loading, user } = API.useUser();
 
     const navbarLogin = UI.useBreakpointValue({
         base: "block",
         md: "none",
     });
-
-    useEffect(() => {
-        if (loading || user === undefined) {
-            return;
-        }
-
-        let registerDate = new Date(user.registerDate);
-        setParsedDate(formatDate(registerDate, false));
-    }, [user]);
 
     if (loading) {
         return (
@@ -47,19 +37,30 @@ export const Profile = () => {
         return <>{navbarLogin === "none" && <LoginForm popover={false} />}</>;
     }
 
+    return <ProfilePreview user={user} otherUser={false} />;
+};
+
+export const ProfilePreview = (props) => {
+    const { user, otherUser } = props;
+    const [parsedDate, setParsedDate] = useState();
+    useEffect(() => {
+        let registerDate = new Date(user.registerDate);
+        setParsedDate(formatDate(registerDate, false));
+    }, [user]);
+
     return (
         <UI.HStack
-            alignItems="start"
+            alignItems="center"
             backgroundColor={Config.BackgroundDarker}
-            width="340px"
+            width={otherUser ? "360px" : "340px"}
             borderRadius="15px"
             spacing="0"
             padding="15px"
-            marginBottom="20px"
+            marginBottom={otherUser ? "10px" : "20px"}
         >
             <UI.Image
-                width="100px"
-                height="100px"
+                width={otherUser ? "120px" : "100px"}
+                height={otherUser ? "120px" : "100px"}
                 borderRadius="15px"
                 marginRight="15px"
                 src={
@@ -73,10 +74,10 @@ export const Profile = () => {
             />
 
             <UI.VStack
-                width="100%"
                 justifyContent="start"
                 alignItems="start"
                 spacing="3px"
+                width={otherUser ? "auto" : "100%"}
             >
                 <UI.HStack
                     width="100%"
@@ -95,6 +96,7 @@ export const Profile = () => {
                     <UI.Spacer />
 
                     <UI.Icon
+                        display={otherUser ? "none" : "block"}
                         fontSize="2xl"
                         as={BiLogOut}
                         transition="color 0.15s ease"
@@ -191,10 +193,7 @@ export const LoginForm = (props) => {
                     if (response.status !== 200) {
                         toast({
                             title: "Login error",
-                            description:
-                                response.status === 400
-                                    ? "Are you a robot?"
-                                    : "Invalid username or password",
+                            description: "Invalid username or password",
                             status: "error",
                             duration: 6000,
                             isClosable: true,

@@ -2,6 +2,7 @@ package pl.mikigal.memes.authorization;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.authentication.AuthenticationServiceException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -34,8 +35,7 @@ public class JsonObjectAuthenticationFilter extends UsernamePasswordAuthenticati
 
             LoginCredentials credentials = this.mapper.readValue(builder.toString(), LoginCredentials.class);
             if (!this.recaptchaValidationService.validate(credentials.getCaptchaToken())) {
-                response.setStatus(400);
-                return null;
+                throw new BadCredentialsException("invalid captcha response");
             }
 
             UsernamePasswordAuthenticationToken token =

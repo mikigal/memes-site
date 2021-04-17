@@ -91,7 +91,7 @@ export const Meme = (props) => {
                     fontWeight="bold"
                     paddingRight="15px"
                 >
-                    <Link href={"/users/" + author}>{author}</Link>
+                    <Link href={"/profile/" + author}>{author}</Link>
                 </UI.Text>
 
                 <UI.Text fontSize={{ base: "md", lg: "lg" }}>

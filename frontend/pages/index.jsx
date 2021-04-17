@@ -3,6 +3,7 @@ import * as API from "../core/utils/api";
 import * as Config from "../core/config.json";
 
 import { fetcher, ErrorAlert } from "../core/utils/utils";
+import { PageButtons } from "../core/components/page_buttons";
 import { MemeUploader } from "../core/components/meme_uploader";
 import { Meme } from "../core/components/meme_preview";
 
@@ -19,16 +20,6 @@ export default function Index() {
         Config.restAddress + "/memes?page=" + page,
         fetcher
     );
-
-    const previousPageText = UI.useBreakpointValue({
-        base: "Previous",
-        md: "Previous page",
-    });
-
-    const nextPageText = UI.useBreakpointValue({
-        base: "Next",
-        md: "Next page",
-    });
 
     if (error) {
         return (
@@ -63,51 +54,11 @@ export default function Index() {
                 />
             ))}
 
-            <UI.HStack paddingLeft="7%" paddingRight="7%" marginBottom="10px">
-                <PageButton
-                    redirectTo={page - 1}
-                    lastPage={data.pages}
-                    text={previousPageText}
-                />
-                <UI.Spacer />
-                <UI.Text
-                    fontSize={{ base: "2xl", md: "30px" }}
-                    fontWeight="bold"
-                >
-                    {page + 1}
-                </UI.Text>
-                <UI.Spacer />
-                <PageButton
-                    redirectTo={page + 1}
-                    maxPages={data.pages}
-                    text={nextPageText}
-                />
-            </UI.HStack>
+            <PageButtons
+                page={page}
+                pages={data.pages}
+                switchTo="/?page={page}"
+            />
         </>
     );
 }
-
-const PageButton = (props) => {
-    const { redirectTo, maxPages, text } = props;
-    const router = useRouter();
-
-    return (
-        <UI.Button
-            variant="outline"
-            width="40%"
-            height="45px"
-            borderColor={Config.Text}
-            color={Config.Text}
-            disabled={redirectTo === -1 || redirectTo === maxPages}
-            _hover={{
-                color: Config.Accent,
-                borderColor: Config.Accent,
-            }}
-            onClick={() => {
-                router.push("/?page=" + redirectTo);
-            }}
-        >
-            {text}
-        </UI.Button>
-    );
-};
