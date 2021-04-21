@@ -48,7 +48,7 @@ public class RecaptchaValidationService {
 			reader.close();
 
 			RecaptchaResponse response = this.mapper.readValue(responseBuilder.toString(), RecaptchaResponse.class);
-			return response.isSuccess() && response.getScore() >= 0.5;
+			return response.isSuccess();
 		} catch (UnrecognizedPropertyException e) {
 			return false;
 		} catch (Exception e) {

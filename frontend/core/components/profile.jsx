@@ -8,7 +8,6 @@ import { formatDate } from "../utils/utils";
 import { Formik, Form, useField } from "formik";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
-import { GoogleReCaptcha } from "react-google-recaptcha-v3";
 import Link from "next/link";
 
 import { BiLogOut } from "react-icons/bi";
@@ -150,7 +149,6 @@ export const ProfilePreview = (props) => {
 export const LoginForm = (props) => {
     const toast = UI.useToast();
     const { popover, popoverClose } = props;
-    const [captchaToken, setCaptchaToken] = useState("");
 
     return (
         <UI.Box
@@ -183,7 +181,6 @@ export const LoginForm = (props) => {
                             body: JSON.stringify({
                                 username: values.usernameLogin,
                                 password: values.passwordLogin,
-                                captchaToken: captchaToken,
                             }),
                         }
                     );
@@ -231,8 +228,6 @@ export const LoginForm = (props) => {
                                 placeholder="Password"
                                 label="Password"
                             />
-
-                            <GoogleReCaptcha onVerify={setCaptchaToken} />
 
                             <UI.Button
                                 isLoading={props.isSubmitting}

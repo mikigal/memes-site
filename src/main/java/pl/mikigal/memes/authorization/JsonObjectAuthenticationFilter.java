@@ -16,12 +16,7 @@ import java.io.IOException;
 
 public class JsonObjectAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private final RecaptchaValidationService recaptchaValidationService;
     private final ObjectMapper mapper = new ObjectMapper();
-
-    public JsonObjectAuthenticationFilter(RecaptchaValidationService recaptchaValidationService) {
-        this.recaptchaValidationService = recaptchaValidationService;
-    }
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -34,10 +29,6 @@ public class JsonObjectAuthenticationFilter extends UsernamePasswordAuthenticati
             }
 
             LoginCredentials credentials = this.mapper.readValue(builder.toString(), LoginCredentials.class);
-            if (!this.recaptchaValidationService.validate(credentials.getCaptchaToken())) {
-                throw new BadCredentialsException("invalid captcha response");
-            }
-
             UsernamePasswordAuthenticationToken token =
                     new UsernamePasswordAuthenticationToken(credentials.getUsername(), credentials.getPassword());
 

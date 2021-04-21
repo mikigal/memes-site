@@ -8,7 +8,7 @@ import { Formik, Form, useField } from "formik";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import Link from "next/link";
-import { GoogleReCaptcha } from "react-google-recaptcha-v3";
+import ReCAPTCHA from "react-google-recaptcha";
 
 export default function register() {
     const { user, loading } = API.useUser();
@@ -82,6 +82,18 @@ export default function register() {
                 })}
                 onSubmit={async (values, actions) => {
                     if (user !== undefined) {
+                        return;
+                    }
+
+                    if (captchaToken === "") {
+                        toast({
+                            title: "Register error",
+                            description: "Are you a robot?",
+                            status: "error",
+                            duration: 6000,
+                            isClosable: true,
+                            position: "bottom-right",
+                        });
                         return;
                     }
 
@@ -162,7 +174,10 @@ export default function register() {
                             />
                             <TermsOfServiceInput />
 
-                            <GoogleReCaptcha onVerify={setCaptchaToken} />
+                            <ReCAPTCHA
+                                sitekey={Config.recaptchaSiteKey}
+                                onChange={setCaptchaToken}
+                            />
 
                             <UI.Button
                                 isLoading={props.isSubmitting}

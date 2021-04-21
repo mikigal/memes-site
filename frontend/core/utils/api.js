@@ -52,7 +52,6 @@ export const useUser = () => {
 };
 
 export const uploadMeme = async (file, title) => {
-    console.log(file);
     if (unauthorized) {
         return "Unauthorized";
     }

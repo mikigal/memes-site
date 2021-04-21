@@ -6,6 +6,5 @@ import lombok.Getter;
 public class RecaptchaResponse {
 	private boolean success;
 	private String challenge_ts;
-	private double score;
 	private String hostname;
 }
